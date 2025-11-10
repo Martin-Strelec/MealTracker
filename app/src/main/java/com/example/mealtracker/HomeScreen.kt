@@ -30,28 +30,20 @@ import com.example.mealtracker.ui.theme.TWEEN_24
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onRecipeAddClicked: () -> Unit
+) {
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Meal Tracker") },
-                // You can add navigation actions or other items here
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Handle Add action */ },
+                onClick = onRecipeAddClicked,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Meal")
             }
-        }
+        },
     ) { innerPadding ->
         Surface (
             modifier = Modifier
@@ -100,6 +92,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun MainPreview() {
     AppTheme {
-        HomeScreen()
+        HomeScreen(onRecipeAddClicked = {})
     }
 }
