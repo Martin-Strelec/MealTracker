@@ -4,4 +4,7 @@
     <string name="favourites">Favourites</string>
     <string name="tracking">Tracking Meals</string>
     <string name="back_button">Back</string>
+    <string name="menu_button">Menu</string>
+    <string name="home">Home</string>
+    <string name="meals">Meals</string>
 </resources>
