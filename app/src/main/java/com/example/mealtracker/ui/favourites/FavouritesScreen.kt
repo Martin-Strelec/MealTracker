@@ -1,4 +1,4 @@
-package com.example.mealtracker
+package com.example.mealtracker.ui.favourites
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,11 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun TrackingScreen(modifier: Modifier = Modifier) {
+fun FavouritesScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Tracking Screen")
+        Text(text = "Favourites Screen")
     }
 }
