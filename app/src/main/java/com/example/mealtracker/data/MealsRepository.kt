@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface MealsRepository {
 
-    fun getMealsOrderedByDate(): Flow<List<Meal>>
+    fun getMealsOrderedByDateStream(): Flow<List<Meal>>
 
-    fun getMealsOrderedByName(): Flow<List<Meal>>
+    fun getMealsOrderedByNameStream(): Flow<List<Meal>>
 
-    fun getItemStream(id: Int): Flow<Meal?>
+    fun getMealStream(id: Int): Flow<Meal?>
 
     suspend fun upsertMeal(meal: Meal)
 
