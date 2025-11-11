@@ -7,7 +7,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MealDao {
+interface MealsDao {
     @Upsert
     suspend fun upsertMeal(meal: Meal)
 
