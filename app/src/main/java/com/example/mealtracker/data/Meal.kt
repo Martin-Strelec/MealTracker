@@ -9,8 +9,10 @@ data class Meal(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
+    val image: String,
+    val calories: String,
     val description: String,
     val ingredients: String,
     val instructions: String,
-    val date: Date
+    val date: String
 )
