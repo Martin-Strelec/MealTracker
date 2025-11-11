@@ -7,4 +7,10 @@
     <string name="menu_button">Menu</string>
     <string name="home">Home</string>
     <string name="meals">Meals</string>
+    <string name="meal_name">Meal name</string>
+    <string name="calories">Calories</string>
+    <string name="description">Description</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="instructions">Instructions</string>
+    <string name="date">Date</string>
 </resources>
