@@ -21,5 +21,5 @@ interface MealsDao {
     fun getMealsOrderedByName(): Flow<List<Meal>>
 
     @Query("SELECT * FROM meal WHERE id = :id")
-    suspend fun getMealById(id: Int): Meal?
+    fun getMeal(id: Int): Flow<Meal?>
 }
