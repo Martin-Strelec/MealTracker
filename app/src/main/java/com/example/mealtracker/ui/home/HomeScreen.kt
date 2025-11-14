@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -23,13 +24,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mealtracker.R
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
 import com.example.mealtracker.ui.theme.TWEEN_24
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
-    override val titleRes = R.string.app_name
+    override val titleRes = R.string.home
+    override val icon = Icons.Filled.Home
+    override val showInDrawer = true
+    override val topLevel = true
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +49,7 @@ fun HomeScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onRecipeAddClicked,
+                onClick = navigateToAddMeal,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Meal")
@@ -98,6 +103,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun MainPreview() {
     AppTheme {
-        HomeScreen(onRecipeAddClicked = {})
+        HomeScreen(navigateToAddMeal = {}, navigateToMealUpdate = {})
     }
 }
