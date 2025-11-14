@@ -5,6 +5,7 @@ import com.example.mealtracker.ui.meal.EditMealViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.mealtracker.ui.home.HomeViewModel
 
 
 object AppViewModelProvider {
@@ -13,6 +14,9 @@ object AppViewModelProvider {
             EditMealViewModel(
                 this.createSavedStateHandle()
             )
+        }
+        initializer {
+            HomeViewModel()
         }
     }
 }
