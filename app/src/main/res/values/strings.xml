@@ -2,7 +2,7 @@
     <string name="app_name">MealTracker</string>
     <string name="add_meal">Add Meal</string>
     <string name="favourites">Favourites</string>
-    <string name="tracking">Tracking Meals</string>
+    <string name="tracking">Tracking</string>
     <string name="back_button">Back</string>
     <string name="menu_button">Menu</string>
     <string name="home">Home</string>
