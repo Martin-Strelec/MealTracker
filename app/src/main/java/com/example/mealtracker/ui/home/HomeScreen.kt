@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -31,8 +32,8 @@ import com.example.mealtracker.ui.theme.TWEEN_24
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
-    override val titleRes = R.string.home
-    override val icon = Icons.Filled.Home
+    override val titleRes = R.string.meals
+    override val icon = Icons.Filled.Menu
     override val showInDrawer = true
 }
 
