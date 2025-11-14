@@ -2,6 +2,8 @@ package com.example.mealtracker.ui.meal
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +15,9 @@ import com.example.mealtracker.R
 object AddMealDestination : NavigationDestination {
     override val route = "add_meal"
     override val titleRes = R.string.add_meal
+    override val icon = Icons.Filled.Add
+    override val showInDrawer = false
+    override val topLevel = false
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,6 +30,6 @@ fun AddMealScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Favourites Screen")
+        Text(text = "Add Meal Screen")
     }
 }
