@@ -34,7 +34,6 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.home
     override val icon = Icons.Filled.Home
     override val showInDrawer = true
-    override val topLevel = true
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

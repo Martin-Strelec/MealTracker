@@ -17,7 +17,6 @@ object TrackingDestination : NavigationDestination {
     override val titleRes = R.string.tracking
     override val icon = Icons.Filled.Star
     override val showInDrawer = true
-    override val topLevel = true
 }
 
 @Composable

@@ -17,7 +17,6 @@ object AddMealDestination : NavigationDestination {
     override val titleRes = R.string.add_meal
     override val icon = Icons.Filled.Add
     override val showInDrawer = false
-    override val topLevel = false
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -17,7 +17,6 @@ object EditMealDestination : NavigationDestination {
     override val titleRes = R.string.edit_meal
     override val icon = Icons.Filled.Edit
     override val showInDrawer = false
-    override val topLevel = false
     const val itemIdArg = "itemId"
     val routeWithArgs = "$route/{$itemIdArg}"
 
