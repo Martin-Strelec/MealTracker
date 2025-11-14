@@ -32,6 +32,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mealtracker.R.string
 import com.example.mealtracker.ui.favourites.FavouriteDestination
 import com.example.mealtracker.ui.home.HomeDestination
+import com.example.mealtracker.ui.meal.AddMealDestination
+import com.example.mealtracker.ui.meal.EditMealDestination
 import com.example.mealtracker.ui.navigation.MealTrackerNavHost
 import com.example.mealtracker.ui.tracked.TrackingDestination
 import kotlinx.coroutines.launch
@@ -40,7 +42,11 @@ val topLevelDestinations = listOf(
     HomeDestination,
     FavouriteDestination,
     TrackingDestination
-    // Add other destinations like FavouritesDestination and TrackingDestination here
+)
+
+val subDestinations = listOf(
+    AddMealDestination,
+    EditMealDestination
 )
 
 // AppScreen enum and MealTrackerAppBar should be here as defined above
@@ -54,10 +60,12 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentRoute = backStackEntry?.destination?.route ?: HomeDestination.route
-    val currentDestination = topLevelDestinations.find { it.route == currentRoute }
+    val allDestinations = topLevelDestinations + subDestinations
+    val currentDestination = allDestinations.find { it.route == currentRoute }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = navController.previousBackStackEntry != null,
         drawerContent = {
             ModalDrawerSheet {
                 Text(stringResource(R.string.app_name), modifier = Modifier.padding(16.dp))
