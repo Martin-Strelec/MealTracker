@@ -3,6 +3,7 @@ package com.example.mealtracker.ui.tracked
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Text
@@ -15,7 +16,7 @@ import com.example.mealtracker.ui.navigation.NavigationDestination
 object TrackingDestination : NavigationDestination {
     override val route = "tracking"
     override val titleRes = R.string.tracking
-    override val icon = Icons.Filled.Star
+    override val icon = Icons.Filled.DateRange
     override val showInDrawer = true
 }
 
