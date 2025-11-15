@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.mealtracker.data.MealsRepository
 
 class EditMealViewModel(
     savedStateHandle: SavedStateHandle,
+    mealSRepository: MealsRepository
 ) : ViewModel() {
 
     /**
