@@ -34,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +47,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mealtracker.R
 import com.example.mealtracker.data.Meal
+import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.meal.toStringDate
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
@@ -71,8 +74,10 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     navigateToAddMeal: () -> Unit,
     navigateToMealUpdate: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val homeUiState by viewModel.homeUiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
@@ -110,15 +115,7 @@ fun HomeScreen(
                     singleLine = true
                 )
                 HomeBody(
-                    mealList = listOf(
-                        Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis()),
-                        Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis()),
-                        Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-                        Meal(4, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-                        Meal(5, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-                        Meal(6, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-                        Meal(7, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-                    ),
+                    mealList = homeUiState.mealList,
                     onMealClick = navigateToMealUpdate,
                     modifier = Modifier
                 )
