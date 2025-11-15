@@ -15,14 +15,15 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             EditMealViewModel(
-                this.createSavedStateHandle()
+                this.createSavedStateHandle(),
+                mealTrackerApplication().container.mealsRepository
             )
         }
         initializer {
-            HomeViewModel()
+            HomeViewModel(mealTrackerApplication().container.mealsRepository)
         }
         initializer {
-            AddMealViewModel(MealTrackerApplication().container.mealsRepository)
+            AddMealViewModel(mealTrackerApplication().container.mealsRepository)
         }
     }
 }
@@ -31,5 +32,5 @@ object AppViewModelProvider {
  * Extension function to queries for [Application] object and returns an instance of
  * [MealTrackerApplication].
  */
-fun CreationExtras.MealTrackerApplication(): MealTrackerApplication =
+fun CreationExtras.mealTrackerApplication(): MealTrackerApplication =
     (this[AndroidViewModelFactory.APPLICATION_KEY] as MealTrackerApplication)
