@@ -25,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,7 +57,7 @@ fun AddMealScreen(
         val coroutineScope = rememberCoroutineScope()
         Scaffold(
         ) { innerPadding ->
-            ItemEntryBody(
+            MealEntryBody(
                 mealUiState = viewModel.mealUiState,
                 onItemValueChange = viewModel::updateUiState,
                 onSaveClick = {
@@ -85,7 +84,7 @@ fun AddMealScreen(
 }
 
 @Composable
-fun ItemEntryBody(
+fun MealEntryBody(
     mealUiState: MealUiState,
     onItemValueChange: (MealDetails) -> Unit,
     onSaveClick: () -> Unit,

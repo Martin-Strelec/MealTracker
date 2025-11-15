@@ -60,6 +60,14 @@ fun MealDetails.toMeal(): Meal = Meal(
     dateAdded = System.currentTimeMillis()
 )
 
+/**
+ * Extension function to convert [Item] to [ItemUiState]
+ */
+fun Meal.toMealUiState(isEntryValid: Boolean = false): MealUiState = MealUiState(
+    mealDetails = this.toMealDetails(),
+    isEntryValid = isEntryValid
+)
+
 fun Meal.toMealDetails(): MealDetails = MealDetails(
     id = id,
     name = name,
