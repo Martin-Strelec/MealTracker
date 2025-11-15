@@ -1,11 +1,16 @@
 package com.example.mealtracker.ui.meal
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.data.MealsRepository
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class AddMealViewModel(private val mealRepository: MealsRepository): ViewModel() {
     var mealUiState by mutableStateOf(MealUiState())
@@ -63,3 +68,12 @@ fun Meal.toMealDetails(): MealDetails = MealDetails(
     calories = calories,
     dateAdded = System.currentTimeMillis()
 )
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun Meal.toStringDate(dateAdded: Long): String {
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    return Instant.ofEpochMilli(dateAdded)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+        .format(formatter)
+}
