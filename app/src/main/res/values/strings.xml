@@ -2,7 +2,7 @@
     <string name="app_name">MealTracker</string>
     <string name="add_meal">Add Meal</string>
     <string name="favourites">Favourites</string>
-    <string name="tracking">Tracking Meals</string>
+    <string name="tracking">Tracking</string>
     <string name="back_button">Back</string>
     <string name="menu_button">Menu</string>
     <string name="home">Home</string>
@@ -13,4 +13,20 @@
     <string name="ingredients">Ingredients</string>
     <string name="instructions">Instructions</string>
     <string name="date">Date</string>
+    <string name="edit_meal">Edit Meal</string>
+    <string name="no_meals_description">No Meals are stored. Click to add new meals!</string>
+    <string name="save_action">Save</string>
+    <string name="meal_desc_req">Description required</string>
+    <string name="calories_req">Calories required</string>
+    <string name="meal_name_req">Name required</string>
+    <string name="required_fields">Required</string>
+    <string name="edit_item_title">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="meal">Meal</string>
+    <string name="name">Name</string>
+    <string name="attention">Attention</string>
+    <string name="delete_question">Are you sure?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="details_meal">Details</string>
 </resources>
