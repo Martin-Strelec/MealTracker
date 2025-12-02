@@ -248,9 +248,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun HomeBodyPreview() {
     AppTheme {
         HomeBody(listOf(
-            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis()),
-            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis()),
-            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis()),
+            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis(), false , false),
+            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis(),false , false),
+            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis(), false, false)
         ), onMealClick = {})
     }
 }
