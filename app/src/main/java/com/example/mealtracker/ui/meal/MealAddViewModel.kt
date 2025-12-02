@@ -54,10 +54,10 @@ data class MealDetails(
 fun MealDetails.toMeal(): Meal = Meal(
     id = id,
     name = name,
-    image = "",
+    image = image,
     description = description,
     calories = calories,
-    dateAdded = System.currentTimeMillis()
+    dateAdded = dateAdded
 )
 
 /**
@@ -71,10 +71,10 @@ fun Meal.toMealUiState(isEntryValid: Boolean = false): MealUiState = MealUiState
 fun Meal.toMealDetails(): MealDetails = MealDetails(
     id = id,
     name = name,
-    image = "",
+    image = image,
     description = description,
     calories = calories,
-    dateAdded = System.currentTimeMillis()
+    dateAdded = dateAdded
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
