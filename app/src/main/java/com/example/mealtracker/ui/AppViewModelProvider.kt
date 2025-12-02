@@ -1,7 +1,7 @@
 package com.example.mealtracker.ui
 
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import com.example.mealtracker.ui.meal.EditMealViewModel
+import com.example.mealtracker.ui.meal.MealEditViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
@@ -9,12 +9,20 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mealtracker.MealTrackerApplication
 import com.example.mealtracker.ui.home.HomeViewModel
 import com.example.mealtracker.ui.meal.AddMealViewModel
+import com.example.mealtracker.ui.meal.MealDetailsViewModel
 
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            EditMealViewModel(
+            MealEditViewModel(
+                this.createSavedStateHandle(),
+                mealTrackerApplication().container.mealsRepository
+            )
+        }
+
+        initializer {
+            MealDetailsViewModel(
                 this.createSavedStateHandle(),
                 mealTrackerApplication().container.mealsRepository
             )
