@@ -53,7 +53,7 @@ class MealEditViewModel(
 
     private fun validateInput(uiState: MealDetails = mealUiState.mealDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && description.isNotBlank() && calories != 0
+            name.isNotBlank()  && description.isNotBlank() && calories != 0
         }
     }
 }
