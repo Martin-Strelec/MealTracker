@@ -18,6 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -38,6 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
@@ -104,6 +110,8 @@ fun MealDetailsScreen(
                     navigateBack()
                 }
             },
+            onToggleFavourite = viewModel::toggleFavourite,
+            onToggleTracked = viewModel::toggleTracked,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -119,6 +127,8 @@ fun MealDetailsScreen(
 private fun MealDetailsBody(
     mealDetailsUiState: MealDetailsUiState,
     onDelete: () -> Unit,
+    onToggleFavourite: () -> Unit,
+    onToggleTracked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -152,6 +162,27 @@ private fun MealDetailsBody(
                 onDeleteCancel = { deleteConfirmationRequired = false },
                 modifier = Modifier.padding(TWEEN_16)
             )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly)
+        {
+            IconButton(onClick = onToggleFavourite) {
+                Icon(
+                    imageVector = if (mealDetailsUiState.mealDetails.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Toggle Favourite",
+                    tint = if (mealDetailsUiState.mealDetails.isFavourite) Color.Red else Color.Gray
+                )
+            }
+
+            // Track Button
+            IconButton(onClick = onToggleTracked) {
+                Icon(
+                    imageVector = if (mealDetailsUiState.mealDetails.isTracked) Icons.Default.Star else Icons.Default.StarBorder,
+                    contentDescription = "Toggle Tracking",
+                    tint = if (mealDetailsUiState.mealDetails.isTracked) Color.Yellow else Color.Gray
+                )
+            }
         }
     }
 }
