@@ -33,9 +33,26 @@ class MealDetailsViewModel(
                 initialValue = MealDetailsUiState()
             )
 
+    fun toggleFavourite() {
+        val currentMeal = uiState.value.mealDetails.toMeal()
+        val updatedMeal = currentMeal.copy(isFavourite = !currentMeal.isFavourite)
+        viewModelScope.launch {
+            mealsRepository.upsertMeal(updatedMeal)
+        }
+    }
+
+    fun toggleTracked() {
+        val currentMeal = uiState.value.mealDetails.toMeal()
+        val updatedMeal = currentMeal.copy(isTracked = !currentMeal.isTracked)
+        viewModelScope.launch {
+            mealsRepository.upsertMeal(updatedMeal)
+        }
+    }
+
     suspend fun deleteMeal() {
         mealsRepository.deleteMeal(uiState.value.mealDetails.toMeal())
     }
+
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

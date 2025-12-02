@@ -22,4 +22,10 @@ interface MealsDao {
 
     @Query("SELECT * FROM meal WHERE id = :id")
     fun getMeal(id: Int): Flow<Meal?>
+
+    @Query("SELECT * FROM meal WHERE isFavourite = 1 ORDER BY name ASC")
+    fun getFavouriteMeals(): Flow<List<Meal>>
+
+    @Query("SELECT * FROM meal WHERE isTracked = 1 ORDER BY dateAdded DESC")
+    fun getTrackedMeals(): Flow<List<Meal>>
 }

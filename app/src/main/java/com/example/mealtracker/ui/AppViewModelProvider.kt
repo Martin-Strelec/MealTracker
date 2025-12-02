@@ -8,9 +8,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mealtracker.MealTrackerApplication
 import com.example.mealtracker.ui.camera.CameraViewModel
+import com.example.mealtracker.ui.favourites.FavouritesViewModel
 import com.example.mealtracker.ui.home.HomeViewModel
 import com.example.mealtracker.ui.meal.AddMealViewModel
 import com.example.mealtracker.ui.meal.MealDetailsViewModel
+import com.example.mealtracker.ui.tracked.TrackingViewModel
 
 
 object AppViewModelProvider {
@@ -29,6 +31,12 @@ object AppViewModelProvider {
         }
         initializer {
             HomeViewModel(mealTrackerApplication().container.mealsRepository)
+        }
+        initializer {
+            FavouritesViewModel(mealTrackerApplication().container.mealsRepository)
+        }
+        initializer {
+            TrackingViewModel(mealTrackerApplication().container.mealsRepository)
         }
         initializer {
             AddMealViewModel(mealTrackerApplication().container.mealsRepository)

@@ -116,6 +116,7 @@ fun HomeScreen(
                 HomeBody(
                     mealList = homeUiState.mealList,
                     onMealClick = navigateToMealDetail,
+                    emptyText = stringResource(R.string.no_meals_description),
                     modifier = Modifier
                 )
 
@@ -134,6 +135,7 @@ fun HomeScreen(
 fun HomeBody(
     mealList: List<Meal>,
     onMealClick: (Int) -> Unit,
+    emptyText: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -142,7 +144,7 @@ fun HomeBody(
     ) {
         if (mealList.isEmpty()) {
             Text(
-                text = stringResource(R.string.no_meals_description),
+                text = emptyText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(TWEEN_24)
@@ -248,10 +250,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun HomeBodyPreview() {
     AppTheme {
         HomeBody(listOf(
-            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis()),
-            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis()),
-            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis()),
-        ), onMealClick = {})
+            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis(), false , false),
+            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis(),false , false),
+            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis(), false, false)
+        ), onMealClick = {},
+            emptyText = "No meals found")
     }
 }
 

@@ -7,6 +7,10 @@ class OfflineMealsRepository(private val mealDao: MealsDao) : MealsRepository {
 
     override fun getMealsOrderedByNameStream(): Flow<List<Meal>> = mealDao.getMealsOrderedByName()
 
+    override fun getFavouriteMeals(): Flow<List<Meal>> = mealDao.getFavouriteMeals()
+
+    override fun getTrackedMeals(): Flow<List<Meal>> = mealDao.getTrackedMeals()
+
     override fun getMealStream(id: Int): Flow<Meal?> = mealDao.getMeal(id)
 
     override suspend fun upsertMeal(meal: Meal) = mealDao.upsertMeal(meal)
