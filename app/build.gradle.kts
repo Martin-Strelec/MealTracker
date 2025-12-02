@@ -50,7 +50,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material3)
     //Room
     val room_version = "2.8.3"
     implementation("androidx.room:room-runtime:$room_version")
