@@ -11,5 +11,7 @@ data class Meal(
     val image: String,
     val description: String,
     val calories: Int,
-    val dateAdded: Long
+    val dateAdded: Long,
+    val isFavourite: Boolean,
+    val isTracked: Boolean
 )
