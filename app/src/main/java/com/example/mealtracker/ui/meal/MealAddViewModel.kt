@@ -48,7 +48,9 @@ data class MealDetails(
     val image: String = "",
     val description: String = "",
     val calories: Int = 0,
-    val dateAdded: Long = System.currentTimeMillis()
+    val dateAdded: Long = System.currentTimeMillis(),
+    val isFavourite: Boolean = false,
+    val isTracked: Boolean = false
 )
 
 fun MealDetails.toMeal(): Meal = Meal(
@@ -57,7 +59,10 @@ fun MealDetails.toMeal(): Meal = Meal(
     image = image,
     description = description,
     calories = calories,
-    dateAdded = dateAdded
+    dateAdded = dateAdded,
+    isFavourite = isFavourite,
+    isTracked = isTracked
+
 )
 
 /**
@@ -74,7 +79,9 @@ fun Meal.toMealDetails(): MealDetails = MealDetails(
     image = image,
     description = description,
     calories = calories,
-    dateAdded = dateAdded
+    dateAdded = dateAdded,
+    isFavourite = isFavourite,
+    isTracked = isTracked
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
