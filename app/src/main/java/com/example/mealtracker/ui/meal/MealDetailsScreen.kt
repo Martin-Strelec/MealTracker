@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
@@ -36,11 +38,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.ui.AppViewModelProvider
@@ -120,18 +125,17 @@ private fun MealDetailsBody(
         modifier = modifier.padding(TWEEN_16),
         verticalArrangement = Arrangement.spacedBy(TWEEN_16)
     ) {
+        AsyncImage(
+            model = mealDetailsUiState.mealDetails.toMeal().image,
+            contentDescription = "Meal Image",
+            modifier = Modifier.fillMaxSize()
+                .height(300.dp),
+            contentScale = ContentScale.Crop
+        )
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         MealDetails(
             meal = mealDetailsUiState.mealDetails.toMeal(), modifier = Modifier.fillMaxWidth()
         )
-//        Button(
-//            onClick = onSellItem,
-//            modifier = Modifier.fillMaxWidth(),
-//            shape = MaterialTheme.shapes.small,
-//            enabled = !itemDetailsUiState.outOfStock
-//        ) {
-//            Text(stringResource(R.string.sell))
-//        }
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
