@@ -53,6 +53,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material3)
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
     //Room
     val room_version = "2.8.3"
     implementation("androidx.room:room-runtime:$room_version")

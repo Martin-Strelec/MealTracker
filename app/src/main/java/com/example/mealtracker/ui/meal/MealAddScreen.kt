@@ -34,6 +34,21 @@ import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.theme.TWEEN_16
 import com.example.mealtracker.ui.theme.TWEEN_24
 import kotlinx.coroutines.launch
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 
 object AddMealDestination : NavigationDestination {
     override val route = "add_meal"
@@ -117,10 +132,57 @@ fun MealInputForm(
     onValueChange: (MealDetails) -> Unit = {},
     enabled: Boolean = true
 ) {
+    val context = LocalContext.current
+
+    val photoPickerLauncer = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let {
+                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                context.contentResolver.takePersistableUriPermission(it, flag)
+
+                onValueChange(mealDetails.copy(image = it.toString()))
+            }
+        }
+    )
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(TWEEN_16)
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clickable(enabled = enabled) {
+                    photoPickerLauncer.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (mealDetails.image.isNotBlank()) {
+                AsyncImage(
+                    model = mealDetails.image,
+                    contentDescription = "Meal Image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = "Meal Image",
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text (
+                        text = "Add Meal Image",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
         OutlinedTextField(
             value = mealDetails.name,
             onValueChange = { onValueChange(mealDetails.copy(name = it)) },
