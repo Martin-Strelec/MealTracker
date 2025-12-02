@@ -34,6 +34,7 @@ import com.example.mealtracker.ui.favourites.FavouriteDestination
 import com.example.mealtracker.ui.home.HomeDestination
 import com.example.mealtracker.ui.meal.AddMealDestination
 import com.example.mealtracker.ui.meal.EditMealDestination
+import com.example.mealtracker.ui.meal.MealDetailsDestination
 import com.example.mealtracker.ui.navigation.MealTrackerNavHost
 import com.example.mealtracker.ui.tracked.TrackingDestination
 import kotlinx.coroutines.launch
@@ -46,7 +47,8 @@ val topLevelDestinations = listOf(
 
 val subDestinations = listOf(
     AddMealDestination,
-    EditMealDestination
+    EditMealDestination,
+    MealDetailsDestination
 )
 
 // AppScreen enum and MealTrackerAppBar should be here as defined above
