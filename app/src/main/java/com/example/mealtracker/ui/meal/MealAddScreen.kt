@@ -1,54 +1,57 @@
 package com.example.mealtracker.ui.meal
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mealtracker.ui.navigation.NavigationDestination
+import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
+import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.TWEEN_16
 import com.example.mealtracker.ui.theme.TWEEN_24
 import kotlinx.coroutines.launch
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 
 object AddMealDestination : NavigationDestination {
     override val route = "add_meal"
@@ -61,17 +64,24 @@ object AddMealDestination : NavigationDestination {
 @Composable
 fun AddMealScreen(
     navigateBack: () -> Unit,
-    onNavigateUp: () -> Unit,
+    onCameraClick: () -> Unit,
+    cameraImageUri: String?,
     modifier: Modifier = Modifier,
     viewModel: AddMealViewModel = viewModel(factory = AppViewModelProvider.Factory)
     ) {
+
+    LaunchedEffect(cameraImageUri) {
+        if (cameraImageUri != null) {
+            viewModel.updateUiState(viewModel.mealUiState.mealDetails.copy(image = cameraImageUri))
+        }
+    }
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         val coroutineScope = rememberCoroutineScope()
-        Scaffold(
-        ) { innerPadding ->
+        Scaffold { innerPadding ->
             MealEntryBody(
                 mealUiState = viewModel.mealUiState,
                 onItemValueChange = viewModel::updateUiState,
@@ -85,6 +95,7 @@ fun AddMealScreen(
                         navigateBack()
                     }
                 },
+                onCameraClick = onCameraClick,
                 modifier = Modifier
                     .padding(
                         start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -103,6 +114,7 @@ fun MealEntryBody(
     mealUiState: MealUiState,
     onItemValueChange: (MealDetails) -> Unit,
     onSaveClick: () -> Unit,
+    onCameraClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -112,6 +124,7 @@ fun MealEntryBody(
         MealInputForm(
             mealDetails = mealUiState.mealDetails,
             onValueChange = onItemValueChange,
+            onCameraClick = onCameraClick,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -130,11 +143,12 @@ fun MealInputForm(
     mealDetails: MealDetails,
     modifier: Modifier = Modifier,
     onValueChange: (MealDetails) -> Unit = {},
+    onCameraClick: () -> Unit,
     enabled: Boolean = true
 ) {
     val context = LocalContext.current
 
-    val photoPickerLauncer = rememberLauncherForActivityResult(
+    val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             uri?.let {
@@ -150,36 +164,67 @@ fun MealInputForm(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(TWEEN_16)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clickable(enabled = enabled) {
-                    photoPickerLauncer.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            if (mealDetails.image.isNotBlank()) {
+        // --- Image Selection Area ---
+        if (mealDetails.image.isNotBlank()) {
+            // Show selected image
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 AsyncImage(
                     model = mealDetails.image,
                     contentDescription = "Meal Image",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.Image,
-                        contentDescription = "Meal Image",
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text (
-                        text = "Add Meal Image",
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                // Option to change image (Floating overlay)
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    androidx.compose.material3.FilledTonalIconButton(onClick = {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }) {
+                        Icon(Icons.Default.Image, contentDescription = "Gallery")
+                    }
+                    androidx.compose.material3.FilledTonalIconButton(onClick = onCameraClick) {
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Camera")
+                    }
+                }
+            }
+        } else {
+            // Show placeholder with TWO options
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Add a photo", style = MaterialTheme.typography.bodyLarge)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(onClick = {
+                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }) {
+                            Icon(Icons.Default.Image, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Gallery")
+                        }
+                        Button(onClick = onCameraClick) {
+                            Icon(Icons.Default.CameraAlt, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Camera")
+                        }
+                    }
                 }
             }
         }

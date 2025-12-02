@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mealtracker.MealTrackerApplication
+import com.example.mealtracker.ui.camera.CameraViewModel
 import com.example.mealtracker.ui.home.HomeViewModel
 import com.example.mealtracker.ui.meal.AddMealViewModel
 import com.example.mealtracker.ui.meal.MealDetailsViewModel
@@ -20,7 +21,6 @@ object AppViewModelProvider {
                 mealTrackerApplication().container.mealsRepository
             )
         }
-
         initializer {
             MealDetailsViewModel(
                 this.createSavedStateHandle(),
@@ -33,11 +33,14 @@ object AppViewModelProvider {
         initializer {
             AddMealViewModel(mealTrackerApplication().container.mealsRepository)
         }
+        initializer {
+            CameraViewModel()
+        }
     }
 }
 
 /**
- * Extension function to queries for [Application] object and returns an instance of
+ * Extension function to queries for [MealTrackerApplication] object and returns an instance of
  * [MealTrackerApplication].
  */
 fun CreationExtras.mealTrackerApplication(): MealTrackerApplication =
