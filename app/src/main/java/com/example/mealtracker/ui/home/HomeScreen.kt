@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -64,7 +63,7 @@ import kotlin.time.toDuration
 object HomeDestination : NavigationDestination {
     override val route = "home"
     override val titleRes = R.string.meals
-    override val icon = Icons.Filled.Menu
+    override val icon = Icons.Filled.Home
     override val showInDrawer = true
 }
 
@@ -73,7 +72,7 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     navigateToAddMeal: () -> Unit,
-    navigateToMealUpdate: (Int) -> Unit,
+    navigateToMealDetail: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -116,7 +115,7 @@ fun HomeScreen(
                 )
                 HomeBody(
                     mealList = homeUiState.mealList,
-                    onMealClick = navigateToMealUpdate,
+                    onMealClick = navigateToMealDetail,
                     modifier = Modifier
                 )
 
