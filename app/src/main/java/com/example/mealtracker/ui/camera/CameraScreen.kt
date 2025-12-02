@@ -44,8 +44,6 @@ fun CameraScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    val imageCapture = remember { ImageCapture.Builder().build() }
-    val previewView = remember { PreviewView(context) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
