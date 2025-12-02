@@ -1,7 +1,12 @@
 package com.example.mealtracker.ui.camera
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -22,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mealtracker.ui.AppViewModelProvider
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -32,55 +39,90 @@ import kotlin.coroutines.suspendCoroutine
 @Composable
 fun CameraScreen(
     onImageCaptured: (Uri) -> Unit,
-    onError: (ImageCaptureException) -> Unit
+    onError: (ImageCaptureException) -> Unit,
+    viewModel: CameraViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val imageCapture = remember { ImageCapture.Builder().build() }
     val previewView = remember { PreviewView(context) }
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            viewModel.onPermissionResult(granted)
+            if (!granted) {
+                Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
     LaunchedEffect(Unit) {
-        val cameraProvider = context.getCameraProvider()
-        val preview = Preview.Builder().build()
-        val cameraSelector  = CameraSelector.DEFAULT_BACK_CAMERA
+        val isGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
 
-        preview.setSurfaceProvider { previewView.surfaceProvider }
+        viewModel.onPermissionResult(isGranted)
 
-        try {
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner, cameraSelector, preview, imageCapture
-            )
-        } catch (ex: Exception) {
-
+        if (!isGranted) {
+            launcher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        AndroidView(
-            factory = { previewView },
-            modifier = Modifier.fillMaxSize()
-        )
-        Button(
-            onClick = {
-                takePhoto(
-                    filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
-                    imageCapture = imageCapture,
-                    outputDirectory = context.filesDir,
-                    executor = ContextCompat.getMainExecutor(context),
-                    onImageCaptured = onImageCaptured,
-                    onError = onError
+
+
+    // 3. UI Content based on ViewModel State
+    if (viewModel.hasCameraPermission) {
+        val imageCapture = remember { ImageCapture.Builder().build() }
+        val previewView = remember { PreviewView(context) }
+
+        LaunchedEffect(Unit) {
+            val cameraProvider = context.getCameraProvider()
+            val preview = Preview.Builder().build()
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            // Correctly binding the surface provider
+            preview.setSurfaceProvider(previewView.surfaceProvider)
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner, cameraSelector, preview, imageCapture
                 )
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            Text("Take Photo")
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
 
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier.fillMaxSize()
+            )
+            Button(
+                onClick = {
+                    takePhoto(
+                        filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+                        imageCapture = imageCapture,
+                        outputDirectory = context.filesDir,
+                        executor = ContextCompat.getMainExecutor(context),
+                        onImageCaptured = onImageCaptured,
+                        onError = onError
+                    )
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Text("Take Photo")
+            }
+        }
+    } else {
+        // Fallback UI
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Please grant camera permissions")
+        }
     }
 }
 
