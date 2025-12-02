@@ -8,6 +8,10 @@ interface MealsRepository {
 
     fun getMealsOrderedByNameStream(): Flow<List<Meal>>
 
+    fun getFavouriteMeals(): Flow<List<Meal>>
+
+    fun getTrackedMeals(): Flow<List<Meal>>
+
     fun getMealStream(id: Int): Flow<Meal?>
 
     suspend fun upsertMeal(meal: Meal)
