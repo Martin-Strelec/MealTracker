@@ -52,7 +52,10 @@ fun MealTrackerNavHost(
             TrackingScreen()
         }
         composable(route = FavouriteDestination.route) {
-            FavouritesScreen()
+            FavouritesScreen(
+                navigateToMealDetail = {
+                navController.navigate("${MealDetailsDestination.route}/$it")
+            })
         }
         composable(
             route = MealDetailsDestination.routeWithArgs,
