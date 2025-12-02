@@ -12,6 +12,7 @@ import com.example.mealtracker.ui.favourites.FavouritesViewModel
 import com.example.mealtracker.ui.home.HomeViewModel
 import com.example.mealtracker.ui.meal.AddMealViewModel
 import com.example.mealtracker.ui.meal.MealDetailsViewModel
+import com.example.mealtracker.ui.tracked.TrackingViewModel
 
 
 object AppViewModelProvider {
@@ -33,6 +34,9 @@ object AppViewModelProvider {
         }
         initializer {
             FavouritesViewModel(mealTrackerApplication().container.mealsRepository)
+        }
+        initializer {
+            TrackingViewModel(mealTrackerApplication().container.mealsRepository)
         }
         initializer {
             AddMealViewModel(mealTrackerApplication().container.mealsRepository)
