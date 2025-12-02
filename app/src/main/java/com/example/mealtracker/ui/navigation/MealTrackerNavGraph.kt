@@ -11,6 +11,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.mealtracker.ui.camera.CameraScreen
 import com.example.mealtracker.ui.favourites.FavouriteDestination
 import com.example.mealtracker.ui.favourites.FavouritesScreen
 import com.example.mealtracker.ui.home.HomeDestination
@@ -41,10 +42,13 @@ fun MealTrackerNavHost(
                 }
             )
         }
-        composable(route = AddMealDestination.route) {
+        composable(route = AddMealDestination.route) { backStackEntry ->
+            val cameraResult = backStackEntry.savedStateHandle.get<String>("camera_result")
             AddMealScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                onNavigateUp = { navController.navigateUp() },
+                onCameraClick = { navController.navigate("camera_screen")},
+                cameraImageUri = cameraResult
             )
         }
         composable(route = TrackingDestination.route) {
@@ -72,7 +76,17 @@ fun MealTrackerNavHost(
         ) {
             EditMealScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                onNavigateUp = { navController.navigateUp() },
+                onCameraClick = { navController.navigate("camera_screen")}
+            )
+        }
+        composable(route = "camera_screen") {
+            CameraScreen(
+                onImageCaptured = { uri ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("camera_result", uri.toString())
+                    navController.popBackStack()
+                },
+                onError = { }
             )
         }
     }
