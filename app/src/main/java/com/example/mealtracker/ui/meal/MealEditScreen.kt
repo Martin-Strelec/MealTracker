@@ -35,6 +35,7 @@ object EditMealDestination : NavigationDestination {
 fun EditMealScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    onCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MealEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -55,6 +56,7 @@ fun EditMealScreen(
                     navigateBack()
                 }
             },
+            onCameraClick = onCameraClick,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),

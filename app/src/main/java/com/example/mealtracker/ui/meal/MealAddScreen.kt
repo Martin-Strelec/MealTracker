@@ -40,10 +40,17 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,9 +69,18 @@ object AddMealDestination : NavigationDestination {
 fun AddMealScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    onCameraClick: () -> Unit,
+    cameraImageUri: String?,
     modifier: Modifier = Modifier,
     viewModel: AddMealViewModel = viewModel(factory = AppViewModelProvider.Factory)
     ) {
+
+    LaunchedEffect(cameraImageUri) {
+        if (cameraImageUri != null) {
+            viewModel.updateUiState(viewModel.mealUiState.mealDetails.copy(image = cameraImageUri))
+        }
+    }
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -85,6 +101,7 @@ fun AddMealScreen(
                         navigateBack()
                     }
                 },
+                onCameraClick = onCameraClick,
                 modifier = Modifier
                     .padding(
                         start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -103,6 +120,7 @@ fun MealEntryBody(
     mealUiState: MealUiState,
     onItemValueChange: (MealDetails) -> Unit,
     onSaveClick: () -> Unit,
+    onCameraClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -112,6 +130,7 @@ fun MealEntryBody(
         MealInputForm(
             mealDetails = mealUiState.mealDetails,
             onValueChange = onItemValueChange,
+            onCameraClick = onCameraClick,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -130,11 +149,12 @@ fun MealInputForm(
     mealDetails: MealDetails,
     modifier: Modifier = Modifier,
     onValueChange: (MealDetails) -> Unit = {},
+    onCameraClick: () -> Unit,
     enabled: Boolean = true
 ) {
     val context = LocalContext.current
 
-    val photoPickerLauncer = rememberLauncherForActivityResult(
+    val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             uri?.let {
@@ -150,36 +170,67 @@ fun MealInputForm(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(TWEEN_16)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clickable(enabled = enabled) {
-                    photoPickerLauncer.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            if (mealDetails.image.isNotBlank()) {
+        // --- Image Selection Area ---
+        if (mealDetails.image.isNotBlank()) {
+            // Show selected image
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 AsyncImage(
                     model = mealDetails.image,
                     contentDescription = "Meal Image",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.Image,
-                        contentDescription = "Meal Image",
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text (
-                        text = "Add Meal Image",
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                // Option to change image (Floating overlay)
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    androidx.compose.material3.FilledTonalIconButton(onClick = {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }) {
+                        Icon(Icons.Default.Image, contentDescription = "Gallery")
+                    }
+                    androidx.compose.material3.FilledTonalIconButton(onClick = onCameraClick) {
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Camera")
+                    }
+                }
+            }
+        } else {
+            // Show placeholder with TWO options
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Add a photo", style = MaterialTheme.typography.bodyLarge)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(onClick = {
+                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }) {
+                            Icon(Icons.Default.Image, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Gallery")
+                        }
+                        Button(onClick = onCameraClick) {
+                            Icon(Icons.Default.CameraAlt, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Camera")
+                        }
+                    }
                 }
             }
         }
