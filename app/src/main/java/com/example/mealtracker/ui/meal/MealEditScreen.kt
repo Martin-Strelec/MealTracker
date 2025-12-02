@@ -34,15 +34,12 @@ object EditMealDestination : NavigationDestination {
 @Composable
 fun EditMealScreen(
     navigateBack: () -> Unit,
-    onNavigateUp: () -> Unit,
     onCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MealEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
-    Scaffold(
-
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         MealEntryBody(
             mealUiState = viewModel.mealUiState,
             onItemValueChange = viewModel::updateUiState,

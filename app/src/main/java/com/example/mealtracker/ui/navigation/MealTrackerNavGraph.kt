@@ -1,11 +1,9 @@
 package com.example.mealtracker.ui.navigation
 
-import android.R.attr.type
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -46,7 +44,6 @@ fun MealTrackerNavHost(
             val cameraResult = backStackEntry.savedStateHandle.get<String>("camera_result")
             AddMealScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() },
                 onCameraClick = { navController.navigate("camera_screen")},
                 cameraImageUri = cameraResult
             )
@@ -76,7 +73,6 @@ fun MealTrackerNavHost(
         ) {
             EditMealScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() },
                 onCameraClick = { navController.navigate("camera_screen")}
             )
         }

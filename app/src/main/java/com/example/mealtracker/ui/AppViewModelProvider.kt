@@ -40,7 +40,7 @@ object AppViewModelProvider {
 }
 
 /**
- * Extension function to queries for [Application] object and returns an instance of
+ * Extension function to queries for [MealTrackerApplication] object and returns an instance of
  * [MealTrackerApplication].
  */
 fun CreationExtras.mealTrackerApplication(): MealTrackerApplication =
