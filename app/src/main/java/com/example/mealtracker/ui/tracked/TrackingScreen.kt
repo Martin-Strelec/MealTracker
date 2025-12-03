@@ -3,21 +3,34 @@ package com.example.mealtracker.ui.tracked
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -35,9 +48,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.mealtracker.R
+import com.example.mealtracker.data.Meal
+import com.example.mealtracker.data.TrackedMealEntry
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.home.HomeBody
 import com.example.mealtracker.ui.navigation.NavigationDestination
@@ -61,14 +80,27 @@ fun TrackingScreen(
     viewModel: TrackingViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val trackingUiState by viewModel.trackingUiState.collectAsState()
+    val allMeals by viewModel.allMealsState.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
 
     var showDatePicker by remember { mutableStateOf(false) }
+    var showAddMealDialog by remember { mutableStateOf(false) }
+
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDate
     )
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showAddMealDialog = true },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Tracked Meal")
+            }
+        }
+    ) { innerPadding ->
         Surface (
             modifier = Modifier
                 .padding(innerPadding)
@@ -141,11 +173,159 @@ fun TrackingScreen(
                         DatePicker(state = datePickerState)
                     }
                 }
-                HomeBody(
+                // Add Meal Dialog
+                if (showAddMealDialog) {
+                    AddTrackedMealDialog(
+                        mealList = allMeals,
+                        onDismiss = { showAddMealDialog = false },
+                        onMealSelected = { meal ->
+                            viewModel.trackNewMeal(meal)
+                            showAddMealDialog = false
+                        }
+                    )
+                }
+                // Tracked List
+                TrackedMealList(
                     mealList = trackingUiState.mealList,
                     onMealClick = navigateToMealDetail,
+                    onDeleteClick = { viewModel.removeTrackedMeal(it) },
                     emptyText = stringResource(R.string.no_tracked_meals_description),
                     modifier = Modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AddTrackedMealDialog(
+    mealList: List<Meal>,
+    onDismiss: () -> Unit,
+    onMealSelected: (Meal) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select Meal to Track") },
+        text = {
+            LazyColumn(
+                modifier = Modifier.heightIn(AppTheme.dimens.detailImageHeight)
+            ) {
+                items(mealList) { meal ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onMealSelected(meal) }
+                            .padding(vertical = AppTheme.dimens.paddingMedium),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = meal.image,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(40.dp)
+                                .width(40.dp)
+                                .padding(end = 12.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                        Text(text = meal.name, style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun TrackedMealList(
+    mealList: List<TrackedMealEntry>,
+    onMealClick: (Int) -> Unit,
+    onDeleteClick: (TrackedMealEntry) -> Unit,
+    emptyText: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        if (mealList.isEmpty()) {
+            Text(
+                text = emptyText,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
+            )
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(bottom = 80.dp), // Space for FAB
+                modifier = Modifier.padding(horizontal = AppTheme.dimens.paddingLarge)
+            ) {
+                items(items = mealList, key = { it.trackId }) { entry ->
+                    TrackedInventoryItem(
+                        entry = entry,
+                        onDeleteClick = { onDeleteClick(entry) },
+                        modifier = Modifier
+                            .padding(bottom = AppTheme.dimens.paddingLarge)
+                            .clickable { onMealClick(entry.meal.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TrackedInventoryItem(
+    entry: TrackedMealEntry,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp) // Consistent height
+        ) {
+            AsyncImage(
+                model = entry.meal.image,
+                contentDescription = "Meal Image",
+                modifier = Modifier
+                    .width(100.dp)
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = entry.meal.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "${entry.meal.calories} cal",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove from tracking",
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
