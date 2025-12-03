@@ -139,7 +139,7 @@ fun HomeBody(
                 text = emptyText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {

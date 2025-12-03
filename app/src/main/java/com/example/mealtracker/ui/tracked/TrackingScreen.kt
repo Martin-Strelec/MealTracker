@@ -254,7 +254,7 @@ fun AddTrackedMealDialog(
                     onValueChange = viewModel::onSearchQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AppTheme.dimens.paddingLarge),
+                        .padding(horizontal = AppTheme.dimens.paddingSmall),
                     placeholder = { Text(stringResource(R.string.search_bar_meal)) },
                     leadingIcon = {
                         Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
@@ -321,7 +321,7 @@ fun TrackedMealList(
                 text = emptyText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {
