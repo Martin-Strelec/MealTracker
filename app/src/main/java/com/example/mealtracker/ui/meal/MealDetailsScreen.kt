@@ -147,7 +147,7 @@ private fun MealDetailsBody(
     ) {
         AsyncImage(
             model = mealDetailsUiState.mealDetails.toMeal().image,
-            contentDescription = "Meal Image",
+            contentDescription = stringResource(R.string.meal_image),
             modifier = Modifier
                 .fillMaxSize()
                 .height(AppTheme.dimens.detailImageHeight),
@@ -182,7 +182,7 @@ private fun MealDetailsBody(
             IconButton(onClick = onToggleFavourite) {
                 Icon(
                     imageVector = if (mealDetailsUiState.mealDetails.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Toggle Favourite",
+                    contentDescription = stringResource(R.string.toggle_favourite),
                     tint = if (mealDetailsUiState.mealDetails.isFavourite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

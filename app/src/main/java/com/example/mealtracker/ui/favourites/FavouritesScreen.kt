@@ -65,9 +65,9 @@ fun FavouritesScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = AppTheme.dimens.paddingLarge),
-                    placeholder = { Text("Search for a meal...") },
+                    placeholder = { Text(stringResource(R.string.search_bar_meal)) },
                     leadingIcon = {
-                        Icon(Icons.Filled.Search, contentDescription = "Search Icon")
+                        Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
                     },
                     singleLine = true,
                     shape = MaterialTheme.shapes.large,

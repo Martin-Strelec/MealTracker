@@ -173,7 +173,7 @@ fun MealInputForm(
             ) {
                 AsyncImage(
                     model = mealDetails.image,
-                    contentDescription = "Meal Image",
+                    contentDescription = stringResource(R.string.meal_image),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
                 )
@@ -187,10 +187,10 @@ fun MealInputForm(
                     androidx.compose.material3.FilledTonalIconButton(onClick = {
                         photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }) {
-                        Icon(Icons.Default.Image, contentDescription = "Gallery")
+                        Icon(Icons.Default.Image, contentDescription = stringResource(R.string.gallery))
                     }
                     androidx.compose.material3.FilledTonalIconButton(onClick = onCameraClick) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = "Camera")
+                        Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.camera))
                     }
                 }
             }
@@ -207,7 +207,7 @@ fun MealInputForm(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Add a photo", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.add_photo), style = MaterialTheme.typography.bodyLarge)
                     Spacer(modifier = Modifier.height(AppTheme.dimens.spacerMedium))
                     Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)) {
                         Button(onClick = {
@@ -215,12 +215,12 @@ fun MealInputForm(
                         }) {
                             Icon(Icons.Default.Image, contentDescription = null)
                             Spacer(Modifier.width(AppTheme.dimens.paddingSmall))
-                            Text("Gallery")
+                            Text(stringResource(R.string.gallery))
                         }
                         Button(onClick = onCameraClick) {
                             Icon(Icons.Default.CameraAlt, contentDescription = null)
                             Spacer(Modifier.width(AppTheme.dimens.paddingSmall))
-                            Text("Camera")
+                            Text(stringResource(R.string.camera))
                         }
                     }
                 }

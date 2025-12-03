@@ -74,7 +74,7 @@ fun HomeScreen(
                 onClick = navigateToAddMeal,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Meal")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_meal))
             }
         },
     ) { innerPadding ->
@@ -96,9 +96,9 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = AppTheme.dimens.paddingLarge),
-                    placeholder = { Text("Search for a meal...") },
+                    placeholder = { Text(stringResource(R.string.search_bar_meal)) },
                     leadingIcon = {
-                        Icon(Icons.Filled.Search, contentDescription = "Search Icon")
+                        Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
                     },
                     singleLine = true,
                     shape = MaterialTheme.shapes.large,
@@ -194,7 +194,7 @@ fun InventoryItem(
         ) {
             AsyncImage(
                 model = item.image,
-                contentDescription = "Meal Image",
+                contentDescription = stringResource(R.string.meal_image),
                 modifier = Modifier
                     .width(AppTheme.dimens.listImageSize)
                     .fillMaxSize(),

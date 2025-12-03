@@ -91,7 +91,7 @@ fun TrackingScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Tracked Meal")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_meal_tracked))
             }
         },
         bottomBar = {
@@ -124,7 +124,7 @@ fun TrackingScreen(
                         readOnly = true,
                         label = { Text("Filter by Date") },
                         trailingIcon = {
-                            Icon(Icons.Filled.DateRange, contentDescription = "Select Date")
+                            Icon(Icons.Filled.DateRange, contentDescription = stringResource(R.string.select_date))
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -158,12 +158,12 @@ fun TrackingScreen(
                                 }
                                 showDatePicker = false
                             }) {
-                                Text("OK")
+                                Text(stringResource(R.string.ok))
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { showDatePicker = false }) {
-                                Text("Cancel")
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     ) {
@@ -209,7 +209,7 @@ fun TotalCaloriesBottomBar(totalCalories: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Total Calories: ",
+                text = stringResource(R.string.total_calories),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -231,7 +231,7 @@ fun AddTrackedMealDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select Meal to Track") },
+        title = { Text(stringResource(R.string.select_meal_track)) },
         text = {
             LazyColumn(
                 modifier = Modifier.heightIn(AppTheme.dimens.detailImageHeight)
@@ -259,7 +259,7 @@ fun AddTrackedMealDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         }
     )
 }
@@ -351,7 +351,7 @@ fun TrackedInventoryItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove from tracking",
+                    contentDescription = stringResource(R.string.tracking_remove),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

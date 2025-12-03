@@ -25,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.theme.AppTheme
 import java.io.File
@@ -114,14 +116,14 @@ fun CameraScreen(
                     .align(Alignment.BottomCenter)
                     .padding(AppTheme.dimens.paddingMedium)
             ) {
-                Text("Take Photo")
+                Text(stringResource(R.string.take_photo))
             }
         }
     } else {
         // Fallback UI
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "Please grant camera permissions",
+                text = stringResource(R.string.camera_grant_permission),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error
             )
