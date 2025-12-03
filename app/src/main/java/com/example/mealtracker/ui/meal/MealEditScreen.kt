@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -36,9 +37,16 @@ fun EditMealScreen(
     navigateBack: () -> Unit,
     onCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
+    cameraImageUri: String? = null,
     viewModel: MealEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(cameraImageUri) {
+        if(cameraImageUri != null) {
+            viewModel.updateUiState(viewModel.mealUiState.mealDetails.copy(image = cameraImageUri))
+        }
+    }
     Scaffold { innerPadding ->
         MealEntryBody(
             mealUiState = viewModel.mealUiState,

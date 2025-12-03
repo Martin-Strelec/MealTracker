@@ -79,10 +79,14 @@ fun MealTrackerNavHost(
             arguments = listOf(navArgument(EditMealDestination.itemIdArg) {
                 type = NavType.IntType
             })
-        ) {
+        ) { backStackEntry ->
+
+            val cameraResult = backStackEntry.savedStateHandle.get<String>("camera_result")
+
             EditMealScreen(
                 navigateBack = { navController.popBackStack() },
-                onCameraClick = { navController.navigate("camera_screen")}
+                onCameraClick = { navController.navigate("camera_screen")},
+                cameraImageUri = cameraResult
             )
         }
         composable(route = "camera_screen") {
