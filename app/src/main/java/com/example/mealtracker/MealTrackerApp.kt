@@ -20,9 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,7 @@ import com.example.mealtracker.ui.meal.AddMealDestination
 import com.example.mealtracker.ui.meal.EditMealDestination
 import com.example.mealtracker.ui.meal.MealDetailsDestination
 import com.example.mealtracker.ui.navigation.MealTrackerNavHost
+import com.example.mealtracker.ui.theme.TWEEN_16
 import com.example.mealtracker.ui.tracked.TrackingDestination
 import kotlinx.coroutines.launch
 
@@ -63,14 +68,20 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
     // Get the name of the current screen
     val currentRoute = backStackEntry?.destination?.route ?: HomeDestination.route
     val allDestinations = topLevelDestinations + subDestinations
-    val currentDestination = allDestinations.find { it.route == currentRoute }
+    val currentDestination = allDestinations.find { currentRoute.startsWith(it.route) }
+
+    var topBarTitle by remember { mutableStateOf("") }
+
+    LaunchedEffect(currentRoute) {
+        topBarTitle = ""
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = navController.previousBackStackEntry != null,
         drawerContent = {
             ModalDrawerSheet {
-                Text(stringResource(R.string.app_name), modifier = Modifier.padding(16.dp))
+                Text(stringResource(R.string.app_name), modifier = Modifier.padding(TWEEN_16))
                 // Add a spacer for some top padding
                 Spacer(Modifier.height(12.dp))
                 // Get all screens that should be shown in the drawer
@@ -80,7 +91,7 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
                         icon = { Icon(screen.icon, contentDescription = null) },
                         label = { Text(stringResource(screen.titleRes)) },
                         // Highlight the item if it's the current screen
-                        selected = screen.route == currentRoute,
+                        selected = currentRoute.startsWith(screen.route),
                         onClick = {
                             // Navigate to the screen
                             navController.navigate(screen.route) {
@@ -107,8 +118,14 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
     ) {
         Scaffold(
             topBar = {
+                val title = if (topBarTitle.isNotEmpty()) {
+                    topBarTitle
+                } else {
+                    currentDestination?.titleRes?.let {stringResource(it)}
+                        ?: stringResource(R.string.app_name)
+                }
                 MealTrackerAppBar(
-                    titleRes = currentDestination?.titleRes ?: R.string.app_name,
+                    title = title,
                     canNavigateBack = navController.previousBackStackEntry != null,
                     onNavigateUp = { navController.navigateUp() },
                     onMenuClicked = {
@@ -122,7 +139,8 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
             // Your NavHost now lives inside the Scaffold's content area
             MealTrackerNavHost(
                 navController = navController,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                onTitleChange = { newTitle -> topBarTitle = newTitle}
             )
         }
     }
@@ -131,14 +149,14 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealTrackerAppBar(
-    titleRes: Int,
+    title: String,
     canNavigateBack: Boolean,
     onNavigateUp: () -> Unit,
     onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { Text(stringResource(titleRes)) },
+        title = { Text(title) },
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {

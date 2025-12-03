@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,10 +79,18 @@ fun MealDetailsScreen(
     navigateToEditMeal: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onTitleChange: (String) -> Unit = {},
     viewModel: MealDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
+    val mealName = uiState.value.mealDetails.name
+    LaunchedEffect(mealName) {
+        if (mealName.isNotBlank()) {
+            onTitleChange("Details of " + mealName)
+        }
+    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(

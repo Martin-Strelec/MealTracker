@@ -27,7 +27,8 @@ import com.example.mealtracker.ui.tracked.TrackingScreen
 @Composable
 fun MealTrackerNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTitleChange: (String) -> Unit = {}
 ) {
     NavHost(
         navController = navController, startDestination = HomeDestination.route, modifier = modifier
@@ -69,7 +70,8 @@ fun MealTrackerNavHost(
         ) {
             MealDetailsScreen(
                 navigateToEditMeal = { navController.navigate("${EditMealDestination.route}/$it") },
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                onTitleChange = onTitleChange
             )
         }
         composable(
