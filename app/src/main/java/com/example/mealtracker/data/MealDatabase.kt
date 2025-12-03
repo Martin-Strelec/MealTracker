@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Meal::class],
-    version = 1,
+    entities = [Meal::class, TrackedMeal::class],
+    version = 2,
     exportSchema = false)
 abstract class MealDatabase : RoomDatabase() {
     abstract fun mealDao(): MealsDao
@@ -19,6 +19,7 @@ abstract class MealDatabase : RoomDatabase() {
         fun getDatabase(context: Context): MealDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, MealDatabase::class.java, "meal_database")
+                    .fallbackToDestructiveMigration(false)
                     .build()
                     .also { Instance = it }
             }
