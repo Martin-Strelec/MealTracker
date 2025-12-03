@@ -41,8 +41,7 @@ import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.home.HomeBody
 import com.example.mealtracker.ui.navigation.NavigationDestination
-import com.example.mealtracker.ui.theme.TWEEN_16
-import com.example.mealtracker.ui.theme.TWEEN_24
+import com.example.mealtracker.ui.theme.AppTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -83,7 +82,7 @@ fun TrackingScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = TWEEN_24, vertical = TWEEN_16)
+                        .padding(horizontal = AppTheme.dimens.paddingLarge, vertical = AppTheme.dimens.paddingMedium)
                 ) {
                     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
                     val dateString = Instant.ofEpochMilli(selectedDate)

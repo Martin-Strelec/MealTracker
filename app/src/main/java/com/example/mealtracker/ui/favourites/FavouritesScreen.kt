@@ -2,17 +2,13 @@ package com.example.mealtracker.ui.favourites
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,10 +18,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,7 +25,7 @@ import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.home.HomeBody
 import com.example.mealtracker.ui.navigation.NavigationDestination
-import com.example.mealtracker.ui.theme.TWEEN_24
+import com.example.mealtracker.ui.theme.AppTheme
 
 object FavouriteDestination : NavigationDestination {
     override val route = "favourite"
@@ -70,7 +62,7 @@ fun FavouritesScreen(
                     onValueChange = viewModel::onSearchQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = TWEEN_24),
+                        .padding(horizontal = AppTheme.dimens.paddingLarge),
                     placeholder = { Text("Search for a meal...") },
                     leadingIcon = {
                         Icon(Icons.Filled.Search, contentDescription = "Search Icon")

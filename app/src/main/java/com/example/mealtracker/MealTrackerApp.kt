@@ -1,5 +1,7 @@
 package com.example.mealtracker
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -40,7 +40,7 @@ import com.example.mealtracker.ui.meal.AddMealDestination
 import com.example.mealtracker.ui.meal.EditMealDestination
 import com.example.mealtracker.ui.meal.MealDetailsDestination
 import com.example.mealtracker.ui.navigation.MealTrackerNavHost
-import com.example.mealtracker.ui.theme.TWEEN_16
+import com.example.mealtracker.ui.theme.AppTheme
 import com.example.mealtracker.ui.tracked.TrackingDestination
 import kotlinx.coroutines.launch
 
@@ -57,6 +57,7 @@ val subDestinations = listOf(
 )
 
 // AppScreen enum and MealTrackerAppBar should be here as defined above
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
@@ -81,9 +82,9 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
         gesturesEnabled = navController.previousBackStackEntry != null,
         drawerContent = {
             ModalDrawerSheet {
-                Text(stringResource(R.string.app_name), modifier = Modifier.padding(TWEEN_16))
+                Text(stringResource(string.app_name), modifier = Modifier.padding(AppTheme.dimens.paddingMedium))
                 // Add a spacer for some top padding
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(AppTheme.dimens.spacerMedium))
                 // Get all screens that should be shown in the drawer
                 val drawerDestinations = topLevelDestinations.filter { it.showInDrawer }
                 drawerDestinations.forEach { screen ->
@@ -118,11 +119,9 @@ fun MealTrackerApp(navController: NavHostController = rememberNavController()) {
     ) {
         Scaffold(
             topBar = {
-                val title = if (topBarTitle.isNotEmpty()) {
-                    topBarTitle
-                } else {
-                    currentDestination?.titleRes?.let {stringResource(it)}
-                        ?: stringResource(R.string.app_name)
+                val title = topBarTitle.ifEmpty {
+                    currentDestination?.titleRes?.let { stringResource(it) }
+                        ?: stringResource(string.app_name)
                 }
                 MealTrackerAppBar(
                     title = title,

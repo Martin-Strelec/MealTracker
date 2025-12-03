@@ -4,13 +4,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,41 +24,25 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarColors
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.ui.AppViewModelProvider
-import com.example.mealtracker.ui.meal.toMeal
-import com.example.mealtracker.ui.meal.toStringDate
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
-import com.example.mealtracker.ui.theme.TWEEN_16
-import com.example.mealtracker.ui.theme.TWEEN_24
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import kotlin.time.toDuration
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -111,7 +91,7 @@ fun HomeScreen(
                     onValueChange = viewModel::onSearchQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = TWEEN_24),
+                        .padding(horizontal = AppTheme.dimens.paddingLarge),
                     placeholder = { Text("Search for a meal...") },
                     leadingIcon = {
                         Icon(Icons.Filled.Search, contentDescription = "Search Icon")
@@ -124,12 +104,6 @@ fun HomeScreen(
                     emptyText = stringResource(R.string.no_meals_description),
                     modifier = Modifier
                 )
-
-//                // You can replace this with your list of meals later
-//                Greeting(
-//                    name = "Content Area",
-//                    modifier = Modifier.align(Alignment.Center)
-//                )
             }
         }
     }
@@ -152,14 +126,14 @@ fun HomeBody(
                 text = emptyText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(TWEEN_24)
+                modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {
             MealList(
                 mealList = mealList,
                 onItemClick = { onMealClick(it.id) },
                 contentPadding = PaddingValues(),
-                modifier = Modifier.padding(TWEEN_24)
+                modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         }
 
@@ -182,7 +156,7 @@ fun MealList(
             InventoryItem(
                 item = item,
                 modifier = Modifier
-                    .padding(bottom = TWEEN_16)
+                    .padding(bottom = AppTheme.dimens.paddingMedium)
                     .clickable { onItemClick(item) }
             )
         }
@@ -196,18 +170,18 @@ fun InventoryItem(
     modifier: Modifier = Modifier
 ) {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = AppTheme.dimens.cardElevation),
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(TWEEN_16),
-            verticalArrangement = Arrangement.spacedBy(TWEEN_16)
+            modifier = Modifier.padding(AppTheme.dimens.paddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)
         ) {
             AsyncImage(
                 model = item.image,
                 contentDescription = "Meal Image",
                 modifier = Modifier.fillMaxSize()
-                    .height(100.dp),
+                    .height(AppTheme.dimens.listImageHeight),
                 contentScale = ContentScale.Crop
             )
             Column (
@@ -227,33 +201,16 @@ fun InventoryItem(
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyPreview() {
     AppTheme {
         HomeBody(listOf(
-            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis(), false , false),
-            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis(),false , false),
-            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis(), false, false)
+            Meal(1, "Brambor", "S", "Super", 5, System.currentTimeMillis(), isFavourite = false , isTracked = false),
+            Meal(2, "Mrkev", "S", "Orange", 12, System.currentTimeMillis(),isFavourite = false , isTracked = false),
+            Meal(3, "Cibule", "S", "White", 15, System.currentTimeMillis(), isFavourite = false , isTracked = false)
         ), onMealClick = {},
             emptyText = "No meals found")
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun MainPreview() {
-//    AppTheme {
-//        HomeScreen(navigateToAddMeal = {}, navigateToMealUpdate = {})
-//    }
-//}

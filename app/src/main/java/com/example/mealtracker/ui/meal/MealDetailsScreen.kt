@@ -25,9 +25,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -49,18 +46,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.navigation.NavigationDestination
-import com.example.mealtracker.ui.theme.TWEEN_16
+import com.example.mealtracker.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 
@@ -74,6 +69,7 @@ object MealDetailsDestination : NavigationDestination {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MealDetailsScreen(
     navigateToEditMeal: (Int) -> Unit,
@@ -88,7 +84,7 @@ fun MealDetailsScreen(
     val mealName = uiState.value.mealDetails.name
     LaunchedEffect(mealName) {
         if (mealName.isNotBlank()) {
-            onTitleChange("Details of " + mealName)
+            onTitleChange("Details of $mealName")
         }
     }
     Scaffold(
@@ -134,7 +130,7 @@ fun MealDetailsScreen(
         )
     }
 }
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun MealDetailsBody(
     mealDetailsUiState: MealDetailsUiState,
@@ -144,15 +140,15 @@ private fun MealDetailsBody(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(TWEEN_16),
-        verticalArrangement = Arrangement.spacedBy(TWEEN_16)
+        modifier = modifier.padding(AppTheme.dimens.paddingMedium),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)
     ) {
         AsyncImage(
             model = mealDetailsUiState.mealDetails.toMeal().image,
             contentDescription = "Meal Image",
             modifier = Modifier
                 .fillMaxSize()
-                .height(300.dp),
+                .height(AppTheme.dimens.detailImageHeight),
             contentScale = ContentScale.Crop
         )
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
@@ -173,7 +169,7 @@ private fun MealDetailsBody(
                     onDelete()
                 },
                 onDeleteCancel = { deleteConfirmationRequired = false },
-                modifier = Modifier.padding(TWEEN_16)
+                modifier = Modifier.padding(AppTheme.dimens.paddingMedium)
             )
         }
         Row(
@@ -210,8 +206,8 @@ fun MealDetails(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(TWEEN_16),
-        verticalArrangement = Arrangement.spacedBy(TWEEN_16)
+            .padding(AppTheme.dimens.paddingMedium),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)
     ) {
         Text(
             text = meal.name,
@@ -236,7 +232,6 @@ fun MealDetails(
             )
         }
         ItemDetailsMain(
-            labelResID = R.string.description,
             itemDetail = meal.description,
             modifier = Modifier
         )
@@ -245,7 +240,8 @@ fun MealDetails(
 
 @Composable
 private fun ItemDetailsMain(
-    @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
+    itemDetail: String,
+    modifier: Modifier = Modifier
 ) {
     Text(
         text = itemDetail,

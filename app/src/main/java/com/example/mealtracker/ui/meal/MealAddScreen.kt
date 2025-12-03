@@ -29,8 +29,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -45,14 +43,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.navigation.NavigationDestination
-import com.example.mealtracker.ui.theme.TWEEN_16
-import com.example.mealtracker.ui.theme.TWEEN_24
+import com.example.mealtracker.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 object AddMealDestination : NavigationDestination {
@@ -120,8 +116,8 @@ fun MealEntryBody(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(TWEEN_16),
-        verticalArrangement = Arrangement.spacedBy(TWEEN_24)
+        modifier = modifier.padding(AppTheme.dimens.paddingMedium),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingLarge)
     ) {
         MealInputForm(
             mealDetails = mealUiState.mealDetails,
@@ -164,7 +160,7 @@ fun MealInputForm(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(TWEEN_16)
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)
     ) {
         // --- Image Selection Area ---
         if (mealDetails.image.isNotBlank()) {
@@ -172,7 +168,7 @@ fun MealInputForm(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
+                    .height(AppTheme.dimens.inputImageHeight),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -185,8 +181,8 @@ fun MealInputForm(
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(AppTheme.dimens.paddingSmall),
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingSmall)
                 ) {
                     androidx.compose.material3.FilledTonalIconButton(onClick = {
                         photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -204,7 +200,7 @@ fun MealInputForm(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
+                    .height(AppTheme.dimens.placeholderImageHeight)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -212,18 +208,18 @@ fun MealInputForm(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Add a photo", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Spacer(modifier = Modifier.height(AppTheme.dimens.spacerMedium))
+                    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)) {
                         Button(onClick = {
                             photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         }) {
                             Icon(Icons.Default.Image, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AppTheme.dimens.paddingSmall))
                             Text("Gallery")
                         }
                         Button(onClick = onCameraClick) {
                             Icon(Icons.Default.CameraAlt, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(AppTheme.dimens.paddingSmall))
                             Text("Camera")
                         }
                     }
@@ -275,7 +271,7 @@ fun MealInputForm(
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),
-                modifier = Modifier.padding(TWEEN_16)
+                modifier = Modifier.padding(AppTheme.dimens.paddingMedium)
             )
         }
     }

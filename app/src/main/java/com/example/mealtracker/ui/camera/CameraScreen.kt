@@ -29,6 +29,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mealtracker.ui.AppViewModelProvider
+import com.example.mealtracker.ui.theme.AppTheme
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -111,7 +112,7 @@ fun CameraScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
+                    .padding(AppTheme.dimens.paddingMedium)
             ) {
                 Text("Take Photo")
             }
