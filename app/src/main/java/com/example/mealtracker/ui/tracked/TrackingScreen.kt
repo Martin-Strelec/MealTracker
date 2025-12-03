@@ -2,6 +2,7 @@ package com.example.mealtracker.ui.tracked
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,13 +14,19 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,7 +41,11 @@ import com.example.mealtracker.R
 import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.home.HomeBody
 import com.example.mealtracker.ui.navigation.NavigationDestination
+import com.example.mealtracker.ui.theme.TWEEN_16
 import com.example.mealtracker.ui.theme.TWEEN_24
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 object TrackingDestination : NavigationDestination {
     override val route = "tracking"
@@ -50,8 +61,13 @@ fun TrackingScreen(
     modifier: Modifier = Modifier,
     viewModel: TrackingViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val homeUiState by viewModel.trackingUiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("")}
+    val trackingUiState by viewModel.trackingUiState.collectAsState()
+    val selectedDate by viewModel.selectedDate.collectAsState()
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate
+    )
 
     Scaffold { innerPadding ->
         Surface (
@@ -64,22 +80,70 @@ fun TrackingScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //Your main content, like a list of meals, will go here
-                //For now, let's put our search bar inside
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = TWEEN_24),
-                    placeholder = { Text("Search for a meal...") },
-                    leadingIcon = {
-                        Icon(Icons.Filled.Search, contentDescription = "Search Icon")
-                    },
-                    singleLine = true
-                )
+                        .padding(horizontal = TWEEN_24, vertical = TWEEN_16)
+                ) {
+                    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+                    val dateString = Instant.ofEpochMilli(selectedDate)
+                        .atZone(ZoneId.systemDefault())
+                        .format(dateFormatter)
+
+                    OutlinedTextField(
+                        value = dateString,
+                        onValueChange = { },
+                        readOnly = true,
+                        label = { Text("Filter by Date") },
+                        trailingIcon = {
+                            Icon(Icons.Filled.DateRange, contentDescription = "Select Date")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true },
+                        enabled = false, // Disable direct text input, handle via Box click or modifier
+                        colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    )
+
+                    // Invisible overlay to capture clicks
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showDatePicker = true }
+                    )
+                }
+
+                if (showDatePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                datePickerState.selectedDateMillis?.let {
+                                    viewModel.updateSelectedDate(it)
+                                }
+                                showDatePicker = false
+                            }) {
+                                Text("OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
                 HomeBody(
-                    mealList = homeUiState.mealList,
+                    mealList = trackingUiState.mealList,
                     onMealClick = navigateToMealDetail,
                     emptyText = stringResource(R.string.no_tracked_meals_description),
                     modifier = Modifier
