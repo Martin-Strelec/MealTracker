@@ -31,4 +31,6 @@
     <string name="details_meal">Details</string>
     <string name="no_favourite_meals_description">No favourite Meals!</string>
     <string name="no_tracked_meals_description">No tracked Meals!</string>
+    <string name="delete_item">Delete Meal</string>
+    <string name="date_added">Date Added</string>
 </resources>
