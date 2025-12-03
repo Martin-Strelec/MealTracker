@@ -1,5 +1,7 @@
 package com.example.mealtracker.ui.meal
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,6 +51,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -138,7 +141,8 @@ private fun MealDetailsBody(
         AsyncImage(
             model = mealDetailsUiState.mealDetails.toMeal().image,
             contentDescription = "Meal Image",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .height(300.dp),
             contentScale = ContentScale.Crop
         )
@@ -165,13 +169,14 @@ private fun MealDetailsBody(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly)
+            horizontalArrangement = Arrangement.SpaceEvenly
+        )
         {
             IconButton(onClick = onToggleFavourite) {
                 Icon(
                     imageVector = if (mealDetailsUiState.mealDetails.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Toggle Favourite",
-                    tint = if (mealDetailsUiState.mealDetails.isFavourite) Color.Red else Color.Gray
+                    tint = if (mealDetailsUiState.mealDetails.isFavourite) Color.Gray else Color.Gray
                 )
             }
 
@@ -180,7 +185,7 @@ private fun MealDetailsBody(
                 Icon(
                     imageVector = if (mealDetailsUiState.mealDetails.isTracked) Icons.Default.Star else Icons.Default.StarBorder,
                     contentDescription = "Toggle Tracking",
-                    tint = if (mealDetailsUiState.mealDetails.isTracked) Color.Yellow else Color.Gray
+                    tint = if (mealDetailsUiState.mealDetails.isTracked) Color.Gray else Color.Gray
                 )
             }
         }
@@ -188,56 +193,74 @@ private fun MealDetailsBody(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MealDetails(
     meal: Meal, modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier, colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(TWEEN_16),
+        verticalArrangement = Arrangement.spacedBy(TWEEN_16)
     ) {
-        Column(
+        Text(
+            text = meal.name,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+        )
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(TWEEN_16),
-            verticalArrangement = Arrangement.spacedBy(TWEEN_16)
         ) {
-            ItemDetailsRow(
-                labelResID = R.string.meal,
-                itemDetail = meal.name,
-                modifier = Modifier.padding(
-                    horizontal = TWEEN_16
-                    )
-            )
-            ItemDetailsRow(
-                labelResID = R.string.description,
-                itemDetail = meal.description,
-                modifier = Modifier.padding(
-                    horizontal = TWEEN_16
-                )
-            )
-            ItemDetailsRow(
+            ItemDetailsValues(
                 labelResID = R.string.calories,
                 itemDetail = meal.calories.toString(),
-                modifier = Modifier.padding(
-                    horizontal = TWEEN_16
-                )
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            ItemDetailsValues(
+                labelResID = R.string.date_added,
+                itemDetail = meal.toStringDate(meal.dateAdded),
+                modifier = Modifier
             )
         }
-
+        ItemDetailsMain(
+            labelResID = R.string.description,
+            itemDetail = meal.description,
+            modifier = Modifier
+        )
     }
 }
 
 @Composable
-private fun ItemDetailsRow(
+private fun ItemDetailsMain(
     @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
-        Text(text = stringResource(labelResID))
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = itemDetail, fontWeight = FontWeight.Bold)
+    Text(
+        text = itemDetail,
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+private fun ItemDetailsValues(
+    @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(labelResID),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = itemDetail,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -245,8 +268,9 @@ private fun ItemDetailsRow(
 private fun DeleteConfirmationDialog(
     onDeleteConfirm: () -> Unit, onDeleteCancel: () -> Unit, modifier: Modifier = Modifier
 ) {
-    AlertDialog(onDismissRequest = { /* Do nothing */ },
-        title = { Text(stringResource(R.string.attention)) },
+    AlertDialog(
+        onDismissRequest = { /* Do nothing */ },
+        title = { Text(stringResource(R.string.delete_item)) },
         text = { Text(stringResource(R.string.delete_question)) },
         modifier = modifier,
         dismissButton = {

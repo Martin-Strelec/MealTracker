@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,15 +42,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.mealtracker.R
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.ui.AppViewModelProvider
+import com.example.mealtracker.ui.meal.toMeal
 import com.example.mealtracker.ui.meal.toStringDate
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
@@ -199,7 +203,14 @@ fun InventoryItem(
             modifier = Modifier.padding(TWEEN_16),
             verticalArrangement = Arrangement.spacedBy(TWEEN_16)
         ) {
-            Row(
+            AsyncImage(
+                model = item.image,
+                contentDescription = "Meal Image",
+                modifier = Modifier.fillMaxSize()
+                    .height(100.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column (
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -208,33 +219,12 @@ fun InventoryItem(
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = item.calories.toString(),
-                    style = MaterialTheme.typography.titleMedium
+                    text = item.calories.toString() + " cal",
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
-            Text(
-                text = item.toStringDate(item.dateAdded),
-                style = MaterialTheme.typography.titleMedium
-            )
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBar(
-    inputField: @Composable () -> Unit,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    shape: Shape = SearchBarDefaults.inputFieldShape,
-    colors: SearchBarColors = SearchBarDefaults.colors(),
-    tonalElevation: Dp = SearchBarDefaults.TonalElevation,
-    shadowElevation: Dp = SearchBarDefaults.ShadowElevation,
-    windowInsets: WindowInsets = SearchBarDefaults.windowInsets,
-    content: @Composable ColumnScope.() -> Unit
-) {
-
 }
 
 @Composable

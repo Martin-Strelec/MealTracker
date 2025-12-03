@@ -33,6 +33,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -228,11 +230,11 @@ fun MealInputForm(
                 }
             }
         }
-        OutlinedTextField(
+        TextField(
             value = mealDetails.name,
             onValueChange = { onValueChange(mealDetails.copy(name = it)) },
             label = { Text(stringResource(R.string.meal_name_req)) },
-            colors = OutlinedTextFieldDefaults.colors(
+            colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -241,26 +243,27 @@ fun MealInputForm(
             enabled = enabled,
             singleLine = true
         )
-        OutlinedTextField(
+        TextField(
             value = mealDetails.description,
             onValueChange = { onValueChange(mealDetails.copy(description = it)) },
             label = { Text(stringResource(R.string.meal_desc_req)) },
-            colors = OutlinedTextFieldDefaults.colors(
+            colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
             //leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = false
         )
-        OutlinedTextField(
+        TextField(
             value = mealDetails.calories.toString(),
             onValueChange = { onValueChange(mealDetails.copy(calories = it.toIntOrNull() ?: 0)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.calories_req)) },
-            colors = OutlinedTextFieldDefaults.colors(
+            colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
