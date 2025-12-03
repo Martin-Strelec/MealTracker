@@ -19,7 +19,7 @@ class FavouritesViewModel(private val mealsRepository: MealsRepository) : ViewMo
     val searchQuery = _searchQuery.asStateFlow()
 
     val favouritesUiState: StateFlow<FavouritesUiState> =
-        combine(mealsRepository.getMealsOrderedByNameStream(), _searchQuery) {meals, query ->
+        combine(mealsRepository.getFavouriteMeals(), _searchQuery) {meals, query ->
             if (query.isBlank()) {
                 FavouritesUiState(meals)
             } else {
