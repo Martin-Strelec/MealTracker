@@ -50,7 +50,7 @@ fun FavouritesScreen(
     viewModel: FavouritesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val favouritesUiState by viewModel.favouritesUiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
+    val searchQuery by viewModel.searchQuery.collectAsState()
 
     Scaffold { innerPadding ->
         Surface (
@@ -67,7 +67,7 @@ fun FavouritesScreen(
                 //For now, let's put our search bar inside
                 TextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = viewModel::onSearchQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = TWEEN_24),
