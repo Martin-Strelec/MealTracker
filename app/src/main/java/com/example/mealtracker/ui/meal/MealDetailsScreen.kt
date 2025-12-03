@@ -91,12 +91,14 @@ fun MealDetailsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navigateToEditMeal(uiState.value.mealDetails.id) },
-                shape = MaterialTheme.shapes.medium,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier
                     .padding(
                         end = WindowInsets.safeDrawing.asPaddingValues()
                             .calculateEndPadding(LocalLayoutDirection.current)
                     )
+
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
@@ -181,16 +183,7 @@ private fun MealDetailsBody(
                 Icon(
                     imageVector = if (mealDetailsUiState.mealDetails.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Toggle Favourite",
-                    tint = if (mealDetailsUiState.mealDetails.isFavourite) Color.Gray else Color.Gray
-                )
-            }
-
-            // Track Button
-            IconButton(onClick = onToggleTracked) {
-                Icon(
-                    imageVector = if (mealDetailsUiState.mealDetails.isTracked) Icons.Default.Star else Icons.Default.StarBorder,
-                    contentDescription = "Toggle Tracking",
-                    tint = if (mealDetailsUiState.mealDetails.isTracked) Color.Gray else Color.Gray
+                    tint = if (mealDetailsUiState.mealDetails.isFavourite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

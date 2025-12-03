@@ -45,8 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.mealtracker.R
@@ -93,6 +93,9 @@ fun TrackingScreen(
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Tracked Meal")
             }
+        },
+        bottomBar = {
+            TotalCaloriesBottomBar(totalCalories = trackingUiState.totalCalories)
         }
     ) { innerPadding ->
         Surface (
@@ -192,6 +195,35 @@ fun TrackingScreen(
 }
 
 @Composable
+fun TotalCaloriesBottomBar(totalCalories: Int) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shadowElevation = AppTheme.dimens.bottomBarShadowElevation,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppTheme.dimens.paddingMedium),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Total Calories: ",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                text = "$totalCalories",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
 fun AddTrackedMealDialog(
     mealList: List<Meal>,
     onDismiss: () -> Unit,
@@ -216,9 +248,9 @@ fun AddTrackedMealDialog(
                             model = meal.image,
                             contentDescription = null,
                             modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
-                                .padding(end = 12.dp),
+                                .height(AppTheme.dimens.iconImageHeight)
+                                .width(AppTheme.dimens.iconImageHeight)
+                                .padding(AppTheme.dimens.paddingMedium),
                             contentScale = ContentScale.Crop
                         )
                         Text(text = meal.name, style = MaterialTheme.typography.bodyLarge)
@@ -250,11 +282,12 @@ fun TrackedMealList(
                 text = emptyText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {
             LazyColumn(
-                contentPadding = PaddingValues(bottom = 80.dp), // Space for FAB
+                contentPadding = PaddingValues(bottom = AppTheme.dimens.listPaddingForFAB), // Space for FAB
                 modifier = Modifier.padding(horizontal = AppTheme.dimens.paddingLarge)
             ) {
                 items(items = mealList, key = { it.trackId }) { entry ->
@@ -278,19 +311,19 @@ fun TrackedInventoryItem(
     modifier: Modifier = Modifier
 ) {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(AppTheme.dimens.cardElevation),
         modifier = modifier
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp) // Consistent height
+                .height(AppTheme.dimens.listItemHeight) // Consistent height
         ) {
             AsyncImage(
                 model = entry.meal.image,
                 contentDescription = "Meal Image",
                 modifier = Modifier
-                    .width(100.dp)
+                    .width(AppTheme.dimens.listImageSize)
                     .fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -298,7 +331,7 @@ fun TrackedInventoryItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(12.dp),
+                    .padding(AppTheme.dimens.paddingMedium),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(

@@ -35,7 +35,8 @@ class TrackingViewModel(private val mealsRepository: MealsRepository) : ViewMode
     val trackingUiState: StateFlow<TrackingUiState> =
         combine(mealsRepository.getAllTrackedMeals(), _selectedDate) { meals, date ->
             val filteredMeals = meals.filter {isSameDay(it.dateConsumed, date) }
-            TrackingUiState(filteredMeals)
+            val totalCalories = filteredMeals.sumOf { it.meal.calories }
+            TrackingUiState(filteredMeals, totalCalories)
         }
             .stateIn(
                 scope = viewModelScope,
@@ -73,4 +74,7 @@ class TrackingViewModel(private val mealsRepository: MealsRepository) : ViewMode
     }
 }
 
-data class TrackingUiState(val mealList: List<TrackedMealEntry> = listOf())
+data class TrackingUiState(
+    val mealList: List<TrackedMealEntry> = listOf(),
+    val totalCalories: Int = 0
+)
