@@ -13,9 +13,10 @@ data class Dimens(
     val detailImageHeight: Dp = 300.dp,
     val inputImageHeight: Dp = 200.dp,
     val placeholderImageHeight: Dp = 150.dp,
-    val iconImageHeight: Dp = 40.dp,
+    val iconImageHeight: Dp = 50.dp,
     val listPaddingForFAB: Dp = 80.dp,
 
+    val dialogHeight: Dp = 300.dp,
 
     val listItemHeight: Dp = 100.dp,
 

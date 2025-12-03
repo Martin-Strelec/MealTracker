@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +35,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +46,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -173,6 +178,7 @@ fun TrackingScreen(
                 // Add Meal Dialog
                 if (showAddMealDialog) {
                     AddTrackedMealDialog(
+                        viewModel = viewModel,
                         mealList = allMeals,
                         onDismiss = { showAddMealDialog = false },
                         onMealSelected = { meal ->
@@ -227,33 +233,66 @@ fun TotalCaloriesBottomBar(totalCalories: Int) {
 fun AddTrackedMealDialog(
     mealList: List<Meal>,
     onDismiss: () -> Unit,
-    onMealSelected: (Meal) -> Unit
+    onMealSelected: (Meal) -> Unit,
+    viewModel: TrackingViewModel
 ) {
+    val searchQuery by viewModel.searchQuery.collectAsState()
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_meal_track)) },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        title = { Text(
+            text = stringResource(R.string.select_meal_track),
+            style = MaterialTheme.typography.headlineSmall,
+            ) },
         text = {
-            LazyColumn(
-                modifier = Modifier.heightIn(AppTheme.dimens.detailImageHeight)
-            ) {
-                items(mealList) { meal ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onMealSelected(meal) }
-                            .padding(vertical = AppTheme.dimens.paddingMedium),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AsyncImage(
-                            model = meal.image,
-                            contentDescription = null,
+            Column {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = viewModel::onSearchQueryChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTheme.dimens.paddingLarge),
+                    placeholder = { Text(stringResource(R.string.search_bar_meal)) },
+                    leadingIcon = {
+                        Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
+                    },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.large,
+                    colors = TextFieldDefaults.colors(
+                        // 3. Ensure Search bar contrasts slightly with the dialog background
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    )
+                )
+                LazyColumn(
+                    modifier = Modifier.height(AppTheme.dimens.dialogHeight)
+                ) {
+                    items(mealList) { meal ->
+                        Row(
                             modifier = Modifier
-                                .height(AppTheme.dimens.iconImageHeight)
-                                .width(AppTheme.dimens.iconImageHeight)
-                                .padding(AppTheme.dimens.paddingMedium),
-                            contentScale = ContentScale.Crop
-                        )
-                        Text(text = meal.name, style = MaterialTheme.typography.bodyLarge)
+                                .fillMaxWidth()
+                                .clickable { onMealSelected(meal) }
+                                .padding(vertical = AppTheme.dimens.paddingMedium),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncImage(
+                                model = meal.image,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .height(AppTheme.dimens.iconImageHeight)
+                                    .width(AppTheme.dimens.iconImageHeight)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .padding(end = AppTheme.dimens.paddingSmall),
+                                contentScale = ContentScale.Crop
+                            )
+                            Text(text = meal.name, style = MaterialTheme.typography.bodyLarge)
+                        }
                     }
                 }
             }

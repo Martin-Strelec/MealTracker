@@ -43,6 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -150,6 +151,7 @@ private fun MealDetailsBody(
             contentDescription = stringResource(R.string.meal_image),
             modifier = Modifier
                 .fillMaxSize()
+                .clip(MaterialTheme.shapes.large)
                 .height(AppTheme.dimens.detailImageHeight),
             contentScale = ContentScale.Crop
         )

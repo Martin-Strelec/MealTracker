@@ -8,6 +8,7 @@ import com.example.mealtracker.data.Meal
 import com.example.mealtracker.data.MealsRepository
 import com.example.mealtracker.data.TrackedMeal
 import com.example.mealtracker.data.TrackedMealEntry
+import com.example.mealtracker.ui.home.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +26,17 @@ class TrackingViewModel(private val mealsRepository: MealsRepository) : ViewMode
     private val _selectedDate = MutableStateFlow(System.currentTimeMillis())
     val selectedDate = _selectedDate.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
     val allMealsState: StateFlow<List<Meal>> =
-        mealsRepository.getMealsOrderedByNameStream()
+        combine(mealsRepository.getMealsOrderedByNameStream(), _searchQuery) {meals, query ->
+            if (query.isBlank()) {
+                meals
+            } else {
+                meals.filter {it.name.contains(query, ignoreCase = true)}
+            }
+        }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -59,6 +69,9 @@ class TrackingViewModel(private val mealsRepository: MealsRepository) : ViewMode
         viewModelScope.launch {
             mealsRepository.deleteTrackedMeal(entry.trackId, entry.meal.id, entry.dateConsumed)
         }
+    }
+    fun onSearchQueryChange(newQuery: String) {
+        _searchQuery.value = newQuery
     }
 
     private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
