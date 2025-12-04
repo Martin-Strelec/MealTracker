@@ -1,13 +1,9 @@
 package com.example.mealtracker
 
-import com.example.mealtracker.data.Meal
-import com.example.mealtracker.data.TrackedMealEntry
-import com.example.mealtracker.data.MealsRepository
+import com.example.mealtracker.fakerepository.FakeMealsRepository
 import com.example.mealtracker.rules.TestDispatcherRule
 import com.example.mealtracker.ui.meal.AddMealViewModel
 import com.example.mealtracker.ui.meal.MealDetails
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
@@ -61,21 +57,5 @@ class AddMealViewModelTest {
         viewModel.updateUiState(validMeal)
         assertTrue(viewModel.mealUiState.isEntryValid)
         assertEquals("Apple", viewModel.mealUiState.mealDetails.name)
-    }
-
-    class FakeMealsRepository : MealsRepository {
-        private val meals = mutableListOf<Meal>()
-
-        override fun getMealsOrderedByDateStream(): Flow<List<Meal>> = flow { emit(meals) }
-        override fun getMealsOrderedByNameStream(): Flow<List<Meal>> = flow { emit(meals) }
-        override fun getAllTrackedMeals(): Flow<List<TrackedMealEntry>> = flow { }
-        override fun getFavouriteMeals(): Flow<List<Meal>> = flow { }
-        override fun getMealStream(id: Int): Flow<Meal?> = flow { }
-        override suspend fun upsertMeal(meal: Meal) {
-            meals.add(meal)
-        }
-        override suspend fun insertTrackedMeal(mealId: Int, date: Long) {}
-        override suspend fun deleteTrackedMeal(trackId: Int, mealId: Int, date: Long) {}
-        override suspend fun deleteMeal(meal: Meal) {}
     }
 }
