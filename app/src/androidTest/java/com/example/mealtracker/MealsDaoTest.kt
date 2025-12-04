@@ -62,9 +62,16 @@ class MealsDaoTest {
     fun daoInsertMeal() = runBlocking {
         mealsDao.upsertMeal(meal1)
         val allMeals = mealsDao.getMealsOrderedByDate().first()
-        assertEquals(allMeals[0], meal1)
+
+        assertEquals(1, allMeals.size)
+        assertEquals(1, allMeals.first().id)
+        assertEquals(meal1.name, allMeals.first().name)
+        assertEquals(meal1.description, allMeals.first().description)
+        assertEquals(meal1.calories, allMeals.first().calories)
     }
 
+    @Test
+    @Throws(Exception::class)
     fun daoUpdateMeal() = runBlocking{
         mealsDao.upsertMeal(meal1)
 
@@ -88,7 +95,10 @@ class MealsDaoTest {
     @Throws(Exception::class)
     fun daoDeleteMeal() = runBlocking {
         mealsDao.upsertMeal(meal1)
-        mealsDao.deleteMeal(meal1)
+
+        val itemToDelete = mealsDao.getMealsOrderedByDate().first().first()
+
+        mealsDao.deleteMeal(itemToDelete)
         val allMeals = mealsDao.getMealsOrderedByDate().first()
         assertEquals(0, allMeals.size)
     }
@@ -166,10 +176,4 @@ class MealsDaoTest {
 
         mealsDao.deleteTrackedMeal(trackedMeal)
     }
-
-
-
-
-
-
 }
