@@ -3,6 +3,7 @@ package com.example.mealtracker
 import com.example.mealtracker.data.Meal
 import com.example.mealtracker.data.TrackedMealEntry
 import com.example.mealtracker.data.MealsRepository
+import com.example.mealtracker.rules.TestDispatcherRule
 import com.example.mealtracker.ui.meal.AddMealViewModel
 import com.example.mealtracker.ui.meal.MealDetails
 import kotlinx.coroutines.flow.Flow
