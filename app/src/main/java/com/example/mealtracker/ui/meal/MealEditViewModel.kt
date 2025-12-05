@@ -11,25 +11,31 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Edit Meal Screen.
+ * Retrieves initial data from the repository and manages the form state.
+ */
 class MealEditViewModel(
     savedStateHandle: SavedStateHandle,
     private val mealsRepository: MealsRepository
 ) : ViewModel() {
 
     /**
-     * Holds current item ui state
+     * Holds current item ui state (form data).
      */
     var mealUiState by mutableStateOf(MealUiState())
         private set
 
     private val mealId: Int = checkNotNull(savedStateHandle[EditMealDestination.itemIdArg])
 
+    // Initializer block to fetch the meal details when the ViewModel is created.
     init {
         viewModelScope.launch {
+            // Fetch the stream, take the first non-null value, and map it to UI state.
             mealUiState = mealsRepository.getMealStream(mealId)
                 .filterNotNull()
                 .first()
-                .toMealUiState(true)
+                .toMealUiState(true) // Set isValid to true initially since it's existing valid data
         }
     }
 
@@ -43,7 +49,8 @@ class MealEditViewModel(
     }
 
     /**
-     * Update the item in the [MealsRepository]'s data source
+     * Update the item in the [MealsRepository]'s data source.
+     * Called when the user clicks Save.
      */
     suspend fun updateItem() {
         if (validateInput(mealUiState.mealDetails)) {
@@ -51,6 +58,9 @@ class MealEditViewModel(
         }
     }
 
+    /**
+     * Validates input (Name and Description must not be blank).
+     */
     private fun validateInput(uiState: MealDetails = mealUiState.mealDetails): Boolean {
         return with(uiState) {
             name.isNotBlank()  && description.isNotBlank() && calories != 0

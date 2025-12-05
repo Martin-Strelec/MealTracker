@@ -3,6 +3,7 @@ package com.example.mealtracker.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Meal Entity
 @Entity
 data class Meal(
     @PrimaryKey(autoGenerate = true)

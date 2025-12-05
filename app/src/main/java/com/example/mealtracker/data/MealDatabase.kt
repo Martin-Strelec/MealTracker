@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
+//Meal database
 @Database(
     entities = [Meal::class, TrackedMeal::class],
     version = 2,

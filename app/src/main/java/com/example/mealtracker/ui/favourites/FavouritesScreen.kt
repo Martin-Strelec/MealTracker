@@ -29,6 +29,10 @@ import com.example.mealtracker.ui.home.HomeBody
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
 
+/**
+ * Navigation destination object for the Favourites Screen.
+ * Defined here to be used in the NavHost graph.
+ */
 object FavouriteDestination : NavigationDestination {
     override val route = "favourite"
     override val titleRes = R.string.favourites
@@ -36,6 +40,10 @@ object FavouriteDestination : NavigationDestination {
     override val showInDrawer = true
 }
 
+/**
+ * Composable that displays the list of user-favourited meals.
+ * Includes a search bar to filter through the favourites.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FavouritesScreen(
@@ -43,6 +51,7 @@ fun FavouritesScreen(
     modifier: Modifier = Modifier,
     viewModel: FavouritesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    // Collect UI state (list of meals) and search query state from ViewModel
     val favouritesUiState by viewModel.favouritesUiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
@@ -57,8 +66,8 @@ fun FavouritesScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //Your main content, like a list of meals, will go here
-                //For now, let's put our search bar inside
+                // --- Search Bar ---
+                // Allows filtering the list of favourites locally
                 TextField(
                     value = searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
@@ -75,11 +84,15 @@ fun FavouritesScreen(
                         focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                         disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        // Hide the underline indicator for a cleaner 'Search Bar' look
+                        // Hide the underline indicator for a cleaner 'floating' look
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
+
+                // --- Meal List ---
+                // Reuses HomeBody from the Home package to display the list of meals.
+                // This ensures consistent look and feel between Home and Favourites screens.
                 HomeBody(
                     mealList = favouritesUiState.mealList,
                     onMealClick = navigateToMealDetail,

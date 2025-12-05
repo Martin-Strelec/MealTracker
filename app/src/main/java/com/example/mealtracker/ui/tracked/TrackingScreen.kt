@@ -64,6 +64,9 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+/**
+ * Navigation destination for the Tracking screen.
+ */
 object TrackingDestination : NavigationDestination {
     override val route = "tracking"
     override val titleRes = R.string.tracking
@@ -71,6 +74,13 @@ object TrackingDestination : NavigationDestination {
     override val showInDrawer = true
 }
 
+/**
+ * The main composable for the Tracking/History feature.
+ * Displays a list of meals consumed on a specific date and calculates total calories.
+ *
+ * @param navigateToMealDetail Callback to view details of a specific meal.
+ * @param viewModel The ViewModel managing the state of tracked meals and date selection.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TrackingScreen(
@@ -78,18 +88,22 @@ fun TrackingScreen(
     modifier: Modifier = Modifier,
     viewModel: TrackingViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val trackingUiState by viewModel.trackingUiState.collectAsState()
-    val allMeals by viewModel.allMealsState.collectAsState()
-    val selectedDate by viewModel.selectedDate.collectAsState()
+    // Collect UI state from ViewModel
+    val trackingUiState by viewModel.trackingUiState.collectAsState() // Tracked meals for selected date
+    val allMeals by viewModel.allMealsState.collectAsState()          // All available meals (for adding new ones)
+    val selectedDate by viewModel.selectedDate.collectAsState()       // Current date filter
 
+    // Local state for dialog visibility
     var showDatePicker by remember { mutableStateOf(false) }
     var showAddMealDialog by remember { mutableStateOf(false) }
 
+    // State for the Material 3 Date Picker component
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDate
     )
 
     Scaffold(
+        // Floating Action Button to add a meal to the current day
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddMealDialog = true },
@@ -99,6 +113,7 @@ fun TrackingScreen(
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_meal_tracked))
             }
         },
+        // Persistent Bottom Bar displaying the total calorie count
         bottomBar = {
             TotalCaloriesBottomBar(totalCalories = trackingUiState.totalCalories)
         }
@@ -113,11 +128,14 @@ fun TrackingScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+                // --- Date Selection Area ---
+                // A read-only text field that triggers the DatePicker dialog when clicked
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = AppTheme.dimens.paddingLarge, vertical = AppTheme.dimens.paddingMedium)
                 ) {
+                    // Format the selected timestamp into a readable string
                     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
                     val dateString = Instant.ofEpochMilli(selectedDate)
                         .atZone(ZoneId.systemDefault())
@@ -125,7 +143,7 @@ fun TrackingScreen(
 
                     OutlinedTextField(
                         value = dateString,
-                        onValueChange = { },
+                        onValueChange = { }, // Read-only
                         readOnly = true,
                         label = { Text("Filter by Date") },
                         trailingIcon = {
@@ -133,8 +151,9 @@ fun TrackingScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showDatePicker = true },
-                        enabled = false, // Disable direct text input, handle via Box click or modifier
+                            .clickable { showDatePicker = true }, // Click handling on modifier
+                        enabled = false, // Disable keyboard input
+                        // Custom colors to make the disabled field look active/clickable
                         colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
                             disabledTextColor = MaterialTheme.colorScheme.onSurface,
                             disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -145,7 +164,7 @@ fun TrackingScreen(
                         )
                     )
 
-                    // Invisible overlay to capture clicks
+                    // Invisible overlay to ensure clicks are captured over the entire text field area
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -153,11 +172,13 @@ fun TrackingScreen(
                     )
                 }
 
+                // --- Date Picker Dialog ---
                 if (showDatePicker) {
                     DatePickerDialog(
                         onDismissRequest = { showDatePicker = false },
                         confirmButton = {
                             TextButton(onClick = {
+                                // Update ViewModel if a date was selected
                                 datePickerState.selectedDateMillis?.let {
                                     viewModel.updateSelectedDate(it)
                                 }
@@ -175,7 +196,9 @@ fun TrackingScreen(
                         DatePicker(state = datePickerState)
                     }
                 }
-                // Add Meal Dialog
+
+                // --- Add Meal Dialog ---
+                // Shows a searchable list of meals to add to the tracking log
                 if (showAddMealDialog) {
                     AddTrackedMealDialog(
                         viewModel = viewModel,
@@ -187,7 +210,8 @@ fun TrackingScreen(
                         }
                     )
                 }
-                // Tracked List
+
+                // --- Main List of Tracked Meals ---
                 TrackedMealList(
                     mealList = trackingUiState.mealList,
                     onMealClick = navigateToMealDetail,
@@ -200,6 +224,9 @@ fun TrackingScreen(
     }
 }
 
+/**
+ * Bottom bar composable that displays the total calories for the day.
+ */
 @Composable
 fun TotalCaloriesBottomBar(totalCalories: Int) {
     Surface(
@@ -229,6 +256,10 @@ fun TotalCaloriesBottomBar(totalCalories: Int) {
     }
 }
 
+/**
+ * Custom Dialog composable for searching and selecting a meal to track.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddTrackedMealDialog(
     mealList: List<Meal>,
@@ -246,9 +277,10 @@ fun AddTrackedMealDialog(
         title = { Text(
             text = stringResource(R.string.select_meal_track),
             style = MaterialTheme.typography.headlineSmall,
-            ) },
+        ) },
         text = {
             Column {
+                // Search Bar inside the dialog
                 TextField(
                     value = searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
@@ -262,7 +294,6 @@ fun AddTrackedMealDialog(
                     singleLine = true,
                     shape = MaterialTheme.shapes.large,
                     colors = TextFieldDefaults.colors(
-                        // 3. Ensure Search bar contrasts slightly with the dialog background
                         focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -270,6 +301,7 @@ fun AddTrackedMealDialog(
                         unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
+                // Scrollable list of meals matching the search
                 LazyColumn(
                     modifier = Modifier.height(AppTheme.dimens.dialogHeight)
                 ) {
@@ -281,6 +313,7 @@ fun AddTrackedMealDialog(
                                 .padding(vertical = AppTheme.dimens.paddingMedium),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Thumbnail
                             AsyncImage(
                                 model = meal.image,
                                 contentDescription = null,
@@ -291,6 +324,7 @@ fun AddTrackedMealDialog(
                                     .padding(end = AppTheme.dimens.paddingSmall),
                                 contentScale = ContentScale.Crop
                             )
+                            // Meal Name
                             Text(text = meal.name, style = MaterialTheme.typography.bodyLarge)
                         }
                     }
@@ -303,6 +337,9 @@ fun AddTrackedMealDialog(
     )
 }
 
+/**
+ * Displays the list of tracked meal entries.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TrackedMealList(
@@ -317,6 +354,7 @@ fun TrackedMealList(
         modifier = modifier
     ) {
         if (mealList.isEmpty()) {
+            // Empty State
             Text(
                 text = emptyText,
                 textAlign = TextAlign.Center,
@@ -325,10 +363,12 @@ fun TrackedMealList(
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {
+            // List Content
             LazyColumn(
                 contentPadding = PaddingValues(bottom = AppTheme.dimens.listPaddingForFAB), // Space for FAB
                 modifier = Modifier.padding(horizontal = AppTheme.dimens.paddingLarge)
             ) {
+                // Use trackId as key for efficient recomposition
                 items(items = mealList, key = { it.trackId }) { entry ->
                     TrackedInventoryItem(
                         entry = entry,
@@ -343,6 +383,10 @@ fun TrackedMealList(
     }
 }
 
+/**
+ * A single row item in the tracking list.
+ * Includes a delete button specific to the tracking entry.
+ */
 @Composable
 fun TrackedInventoryItem(
     entry: TrackedMealEntry,
@@ -358,6 +402,7 @@ fun TrackedInventoryItem(
                 .fillMaxWidth()
                 .height(AppTheme.dimens.listItemHeight) // Consistent height
         ) {
+            // Image
             AsyncImage(
                 model = entry.meal.image,
                 contentDescription = "Meal Image",
@@ -367,6 +412,7 @@ fun TrackedInventoryItem(
                 contentScale = ContentScale.Crop
             )
 
+            // Text info
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -384,6 +430,7 @@ fun TrackedInventoryItem(
                 )
             }
 
+            // Delete Button
             IconButton(
                 onClick = onDeleteClick,
                 modifier = Modifier.align(Alignment.CenterVertically)

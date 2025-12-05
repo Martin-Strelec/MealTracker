@@ -60,15 +60,24 @@ import com.example.mealtracker.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 
+/**
+ * Navigation destination for the Meal Details screen.
+ * Requires an argument (itemId) to load specific data.
+ */
 object MealDetailsDestination : NavigationDestination {
     override val route = "meal_details"
     override val titleRes = R.string.details_meal
     override val icon = Icons.Filled.Edit
     override val showInDrawer = false
     const val itemIdArg = "itemId"
+    // Route format: meal_details/{itemId}
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
+/**
+ * Composable screen for viewing full details of a meal.
+ * Allows editing, deleting, and toggling 'favourite' status.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -79,16 +88,20 @@ fun MealDetailsScreen(
     onTitleChange: (String) -> Unit = {},
     viewModel: MealDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    // Collect the meal data from the ViewModel
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Update the top bar title dynamically based on the meal name
     val mealName = uiState.value.mealDetails.name
     LaunchedEffect(mealName) {
         if (mealName.isNotBlank()) {
             onTitleChange("Details of $mealName")
         }
     }
+
     Scaffold(
+        // FAB navigates to the Edit screen
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navigateToEditMeal(uiState.value.mealDetails.id) },
@@ -96,6 +109,7 @@ fun MealDetailsScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier
                     .padding(
+                        // Ensure FAB doesn't overlap with system navigation bars
                         end = WindowInsets.safeDrawing.asPaddingValues()
                             .calculateEndPadding(LocalLayoutDirection.current)
                     )
@@ -133,6 +147,10 @@ fun MealDetailsScreen(
         )
     }
 }
+
+/**
+ * Body composable displaying image, text details, and action buttons.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun MealDetailsBody(
@@ -146,6 +164,7 @@ private fun MealDetailsBody(
         modifier = modifier.padding(AppTheme.dimens.paddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingMedium)
     ) {
+        // Large header image
         AsyncImage(
             model = mealDetailsUiState.mealDetails.toMeal().image,
             contentDescription = stringResource(R.string.meal_image),
@@ -155,10 +174,16 @@ private fun MealDetailsBody(
                 .height(AppTheme.dimens.detailImageHeight),
             contentScale = ContentScale.Crop
         )
+
+        // State for managing the delete confirmation dialog visibility
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+
+        // Text details (Name, Calories, Date)
         MealDetails(
             meal = mealDetailsUiState.mealDetails.toMeal(), modifier = Modifier.fillMaxWidth()
         )
+
+        // Delete Button
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
@@ -166,6 +191,8 @@ private fun MealDetailsBody(
         ) {
             Text(stringResource(R.string.delete))
         }
+
+        // Show dialog if requested
         if (deleteConfirmationRequired) {
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
@@ -176,6 +203,8 @@ private fun MealDetailsBody(
                 modifier = Modifier.padding(AppTheme.dimens.paddingMedium)
             )
         }
+
+        // Action Buttons Row (Favourite)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly

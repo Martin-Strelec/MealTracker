@@ -21,6 +21,10 @@ import com.example.mealtracker.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
 
+/**
+ * Navigation destination for Editing a Meal.
+ * Requires 'itemId' argument.
+ */
 object EditMealDestination : NavigationDestination {
     override val route = "edit_meal"
     override val titleRes = R.string.edit_meal
@@ -31,6 +35,10 @@ object EditMealDestination : NavigationDestination {
 
 }
 
+/**
+ * Composable screen for editing an existing meal.
+ * Pre-fills the form with existing data and updates the database on save.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMealScreen(
@@ -42,12 +50,15 @@ fun EditMealScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
+    // Handle image capture result from CameraScreen
     LaunchedEffect(cameraImageUri) {
         if(cameraImageUri != null) {
             viewModel.updateUiState(viewModel.mealUiState.mealDetails.copy(image = cameraImageUri))
         }
     }
+
     Scaffold { innerPadding ->
+        // Reuses the MealEntryBody form used in AddMealScreen
         MealEntryBody(
             mealUiState = viewModel.mealUiState,
             onItemValueChange = viewModel::updateUiState,

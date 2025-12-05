@@ -48,6 +48,10 @@ import com.example.mealtracker.ui.AppViewModelProvider
 import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
 
+/**
+ * Navigation destination object for the Home Screen.
+ * Contains route information and UI assets (icon/title) for the Navigation Drawer.
+ */
 object HomeDestination : NavigationDestination {
     override val route = "home"
     override val titleRes = R.string.meals
@@ -55,6 +59,14 @@ object HomeDestination : NavigationDestination {
     override val showInDrawer = true
 }
 
+/**
+ * The main Composable for the Home Screen.
+ * Orchestrates the UI structure including the Scaffold, FAB, Search Bar, and the Meal List.
+ *
+ * @param navigateToAddMeal Callback to navigate to the "Add Meal" screen.
+ * @param navigateToMealDetail Callback to navigate to the details of a specific meal.
+ * @param viewModel The ViewModel that holds the state for this screen.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,11 +76,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    // Collect the UI state (list of meals) and the current search query from the ViewModel.
+    // using collectAsState ensures the UI recomposes whenever the data changes.
     val homeUiState by viewModel.homeUiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-
     Scaffold(
+        // Floating Action Button (FAB) positioned at the bottom-right.
+        // Used to trigger the navigation to the "Add Meal" screen.
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToAddMeal,
@@ -78,6 +93,7 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
+        // Surface acts as the background container for the screen content.
         Surface (
             modifier = Modifier
                 .padding(innerPadding)
@@ -85,11 +101,10 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.background
         ){
             Column (
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
-                 //Your main content, like a list of meals, will go here
-                 //For now, let's put our search bar inside
+                // --- Search Bar Section ---
+                // A TextField that updates the search query in the ViewModel as the user types.
                 TextField(
                     value = searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
@@ -103,14 +118,17 @@ fun HomeScreen(
                     singleLine = true,
                     shape = MaterialTheme.shapes.large,
                     colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    // Hide the underline indicator for a cleaner 'Search Bar' look
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        // Transparent indicators create a "floating" search bar look without underlines.
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
                     )
                 )
+
+                // --- Main Body Section ---
+                // Displays the list of meals or an empty state message.
                 HomeBody(
                     mealList = homeUiState.mealList,
                     onMealClick = navigateToMealDetail,
@@ -122,6 +140,9 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Composable that switches between the list of meals and an empty state message.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeBody(
@@ -135,6 +156,7 @@ fun HomeBody(
         modifier = modifier
     ) {
         if (mealList.isEmpty()) {
+            // Show this text if the database is empty or the search yielded no results.
             Text(
                 text = emptyText,
                 textAlign = TextAlign.Center,
@@ -143,6 +165,7 @@ fun HomeBody(
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         } else {
+            // Show the LazyColumn list if items exist.
             MealList(
                 mealList = mealList,
                 onItemClick = { onMealClick(it.id) },
@@ -150,10 +173,12 @@ fun HomeBody(
                 modifier = Modifier.padding(AppTheme.dimens.paddingLarge)
             )
         }
-
     }
 }
 
+/**
+ * A wrapper around LazyColumn to display the list of meals efficiently.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MealList(
@@ -166,17 +191,23 @@ fun MealList(
         modifier = modifier,
         contentPadding = contentPadding
     ) {
-        items(items = mealList, key = {it.id}) {item ->
+        // Iterate through the meal list.
+        // 'key' is used to help Compose intelligently recompose items when the list changes.
+        items(items = mealList, key = {it.id}) { item ->
             InventoryItem(
                 item = item,
                 modifier = Modifier
                     .padding(bottom = AppTheme.dimens.paddingMedium)
-                    .clickable { onItemClick(item) }
+                    .clickable { onItemClick(item) } // Handle click events on the specific card
             )
         }
     }
 }
 
+/**
+ * Represents a single row item (Card) in the meal list.
+ * Displays the meal image, name, and calorie count.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InventoryItem(
@@ -192,6 +223,7 @@ fun InventoryItem(
                 .fillMaxWidth()
                 .height(AppTheme.dimens.listItemHeight),
         ) {
+            // Load the image asynchronously using Coil.
             AsyncImage(
                 model = item.image,
                 contentDescription = stringResource(R.string.meal_image),
@@ -200,6 +232,8 @@ fun InventoryItem(
                     .fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
+
+            // Text details column.
             Column (
                 modifier = Modifier
                     .padding(AppTheme.dimens.paddingMedium),

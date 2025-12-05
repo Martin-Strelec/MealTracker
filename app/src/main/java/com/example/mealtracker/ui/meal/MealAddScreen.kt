@@ -51,6 +51,9 @@ import com.example.mealtracker.ui.navigation.NavigationDestination
 import com.example.mealtracker.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
+/**
+ * Navigation destination for the Add Meal screen.
+ */
 object AddMealDestination : NavigationDestination {
     override val route = "add_meal"
     override val titleRes = R.string.add_meal
@@ -58,6 +61,14 @@ object AddMealDestination : NavigationDestination {
     override val showInDrawer = false
 }
 
+/**
+ * Composable screen for adding a new meal.
+ * Handles user input, image selection (Gallery/Camera), and saving the data.
+ *
+ * @param navigateBack Callback to return to the previous screen.
+ * @param onCameraClick Callback to navigate to the custom CameraScreen.
+ * @param cameraImageUri The URI of the image returned from the CameraScreen (if any).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealScreen(
@@ -66,8 +77,10 @@ fun AddMealScreen(
     cameraImageUri: String?,
     modifier: Modifier = Modifier,
     viewModel: AddMealViewModel = viewModel(factory = AppViewModelProvider.Factory)
-    ) {
+) {
 
+    // Listen for a result from the CameraScreen.
+    // If a photo was taken, update the ViewModel state with the new URI.
     LaunchedEffect(cameraImageUri) {
         if (cameraImageUri != null) {
             viewModel.updateUiState(viewModel.mealUiState.mealDetails.copy(image = cameraImageUri))
@@ -78,7 +91,9 @@ fun AddMealScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        // Scope required to run the suspend function 'saveMeal'
         val coroutineScope = rememberCoroutineScope()
+
         Scaffold { innerPadding ->
             MealEntryBody(
                 mealUiState = viewModel.mealUiState,
@@ -100,13 +115,16 @@ fun AddMealScreen(
                         top = innerPadding.calculateTopPadding(),
                         end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
                     )
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()) // Allow scrolling for smaller screens
                     .fillMaxWidth()
             )
         }
     }
 }
 
+/**
+ * Body composable containing the input form and the Save button.
+ */
 @Composable
 fun MealEntryBody(
     mealUiState: MealUiState,
@@ -119,12 +137,14 @@ fun MealEntryBody(
         modifier = modifier.padding(AppTheme.dimens.paddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingLarge)
     ) {
+        // Input fields for meal details
         MealInputForm(
             mealDetails = mealUiState.mealDetails,
             onValueChange = onItemValueChange,
             onCameraClick = onCameraClick,
             modifier = Modifier.fillMaxWidth()
         )
+        // Save Button - enabled only if input is valid
         Button(
             onClick = onSaveClick,
             enabled = mealUiState.isEntryValid,
@@ -136,6 +156,9 @@ fun MealEntryBody(
     }
 }
 
+/**
+ * Form composable with text fields and image picker logic.
+ */
 @Composable
 fun MealInputForm(
     mealDetails: MealDetails,
@@ -146,10 +169,13 @@ fun MealInputForm(
 ) {
     val context = LocalContext.current
 
+    // Launcher for the Android Photo Picker (Visual Media).
+    // This allows the user to select images from their gallery without needing full storage permissions.
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             uri?.let {
+                // IMPORTANT: Persist permissions to access this URI later (e.g., after app restart).
                 val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 context.contentResolver.takePersistableUriPermission(it, flag)
 
@@ -164,7 +190,7 @@ fun MealInputForm(
     ) {
         // --- Image Selection Area ---
         if (mealDetails.image.isNotBlank()) {
-            // Show selected image
+            // State: Image Selected - Show image and edit buttons
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -177,7 +203,7 @@ fun MealInputForm(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
                 )
-                // Option to change image (Floating overlay)
+                // Floating overlay buttons to change the image
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -185,17 +211,19 @@ fun MealInputForm(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.dimens.paddingSmall)
                 ) {
                     androidx.compose.material3.FilledTonalIconButton(onClick = {
+                        // Launch Gallery Picker
                         photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }) {
                         Icon(Icons.Default.Image, contentDescription = stringResource(R.string.gallery))
                     }
                     androidx.compose.material3.FilledTonalIconButton(onClick = onCameraClick) {
+                        // Launch Custom Camera Screen
                         Icon(Icons.Default.CameraAlt, contentDescription = stringResource(R.string.camera))
                     }
                 }
             }
         } else {
-            // Show placeholder with TWO options
+            // State: No Image - Show placeholder with buttons
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier
@@ -226,6 +254,8 @@ fun MealInputForm(
                 }
             }
         }
+
+        // --- Text Fields ---
         TextField(
             value = mealDetails.name,
             onValueChange = { onValueChange(mealDetails.copy(name = it)) },
@@ -248,7 +278,6 @@ fun MealInputForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             ),
-            //leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier
                 .fillMaxWidth(),
             enabled = enabled,
@@ -256,6 +285,7 @@ fun MealInputForm(
         )
         TextField(
             value = mealDetails.calories.toString(),
+            // Safe conversion to Int, defaults to 0 if empty/invalid
             onValueChange = { onValueChange(mealDetails.copy(calories = it.toIntOrNull() ?: 0)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.calories_req)) },

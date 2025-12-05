@@ -12,21 +12,39 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+/**
+ * ViewModel to manage the state of the "Add Meal" screen.
+ * Handles input validation and communicates with the repository to save data.
+ */
 class AddMealViewModel(private val mealRepository: MealsRepository): ViewModel() {
+
+    // Holds the current state of the UI (form data and validation status).
+    // Uses standard Compose State to trigger recompositions.
     var mealUiState by mutableStateOf(MealUiState())
         private set
 
+    /**
+     * Updates the UI state when the user types in the form.
+     * Also triggers validation logic on every update.
+     */
     fun updateUiState(mealDetails: MealDetails) {
         mealUiState =
             MealUiState(mealDetails = mealDetails, isEntryValid = validateInput(mealDetails))
     }
 
+    /**
+     * Inserts the new meal into the database.
+     * Suspend function - must be called from a coroutine.
+     */
     suspend fun saveMeal() {
         if (validateInput()) {
             mealRepository.upsertMeal(mealUiState.mealDetails.toMeal())
         }
     }
 
+    /**
+     * Checks if the input is valid (non-blank strings, calories > 0).
+     */
     private fun validateInput(uiState: MealDetails = mealUiState.mealDetails): Boolean {
         return with(uiState) {
             name.isNotBlank() && calories != 0 && description.isNotBlank()
@@ -35,13 +53,19 @@ class AddMealViewModel(private val mealRepository: MealsRepository): ViewModel()
 }
 
 /**
- * Represents Ui State for an Item.
+ * Wrapper class for the UI State.
+ * @param mealDetails The actual data entered by the user.
+ * @param isEntryValid Flag indicating if the Save button should be enabled.
  */
 data class MealUiState(
     val mealDetails: MealDetails = MealDetails(),
     val isEntryValid: Boolean = false
 )
 
+/**
+ * Data class representing the form fields.
+ * Similar to the 'Meal' entity but decoupled for UI purposes.
+ */
 data class MealDetails(
     val id: Int = 0,
     val name: String = "",
@@ -53,6 +77,9 @@ data class MealDetails(
     val isTracked: Boolean = false
 )
 
+/**
+ * Extension function to convert UI state back to the Database Entity.
+ */
 fun MealDetails.toMeal(): Meal = Meal(
     id = id,
     name = name,
@@ -66,7 +93,7 @@ fun MealDetails.toMeal(): Meal = Meal(
 )
 
 /**
- * Extension function to convert [Item] to [ItemUiState]
+ * Extension function to convert Database Entity to UI state.
  */
 fun Meal.toMealUiState(isEntryValid: Boolean = false): MealUiState = MealUiState(
     mealDetails = this.toMealDetails(),
@@ -84,6 +111,9 @@ fun Meal.toMealDetails(): MealDetails = MealDetails(
     isTracked = isTracked
 )
 
+/**
+ * Helper to format the 'dateAdded' timestamp into a readable string.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun Meal.toStringDate(dateAdded: Long): String {
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")

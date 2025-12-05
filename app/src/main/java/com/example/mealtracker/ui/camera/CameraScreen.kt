@@ -39,55 +39,80 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * Composable screen responsible for the Camera UI.
+ * Handles runtime permissions, displays the camera preview using CameraX, and captures photos.
+ *
+ * @param onImageCaptured Callback triggered when a photo is successfully taken. Returns the URI of the saved file.
+ * @param onError Callback triggered when an image capture exception occurs.
+ * @param viewModel ViewModel to manage camera permission state.
+ */
 @Composable
 fun CameraScreen(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit,
     viewModel: CameraViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
+    // --- Permission Handling ---
+
+    // Initialize the permission launcher.
+    // If the user grants/denies the permission in the system dialog, this callback is executed.
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
             viewModel.onPermissionResult(granted)
             if (!granted) {
+                // Show a toast if permission is denied, explaining why it's needed (simplified)
                 Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
             }
         }
     )
 
+    // Check permission status as soon as the Composable enters the composition.
     LaunchedEffect(Unit) {
         val isGranted = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
+        // Update ViewModel with initial state
         viewModel.onPermissionResult(isGranted)
 
+        // If not already granted, launch the system permission request dialog
         if (!isGranted) {
             launcher.launch(Manifest.permission.CAMERA)
         }
     }
 
 
+    // --- UI Content based on Permission State ---
 
-    // 3. UI Content based on ViewModel State
     if (viewModel.hasCameraPermission) {
+        // Prepare CameraX UseCases
+        // ImageCapture: for taking photos
         val imageCapture = remember { ImageCapture.Builder().build() }
+        // PreviewView: The Android View that renders the camera feed
         val previewView = remember { PreviewView(context) }
 
+        // Bind CameraX to Lifecycle
         LaunchedEffect(Unit) {
             val cameraProvider = context.getCameraProvider()
             val preview = Preview.Builder().build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            // Correctly binding the surface provider
+            // Connect the Preview UseCase to the SurfaceProvider of the PreviewView
             preview.setSurfaceProvider(previewView.surfaceProvider)
 
             try {
+                // Unbind any previous use cases before binding new ones
                 cameraProvider.unbindAll()
+
+                // Bind the camera lifecycle to the current lifecycle owner (this Composable).
+                // This ensures the camera opens/closes automatically.
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner, cameraSelector, preview, imageCapture
                 )
@@ -97,10 +122,13 @@ fun CameraScreen(
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
+            // Embed the Android View (PreviewView) within Compose
             AndroidView(
                 factory = { previewView },
                 modifier = Modifier.fillMaxSize()
             )
+
+            // Capture Button Overlay
             Button(
                 onClick = {
                     takePhoto(
@@ -120,7 +148,7 @@ fun CameraScreen(
             }
         }
     } else {
-        // Fallback UI
+        // Fallback UI: Displayed when permission is denied or not yet granted
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 text = stringResource(R.string.camera_grant_permission),
@@ -131,6 +159,16 @@ fun CameraScreen(
     }
 }
 
+/**
+ * Logic to capture a photo and save it to a file.
+ *
+ * @param filenameFormat The format for the timestamped filename.
+ * @param imageCapture The CameraX UseCase object.
+ * @param outputDirectory The directory to save the image.
+ * @param executor The executor to run the callback (MainExecutor for UI thread).
+ * @param onImageCaptured Success callback with the file URI.
+ * @param onError Error callback.
+ */
 private fun takePhoto(
     filenameFormat: String,
     imageCapture: ImageCapture,
@@ -139,13 +177,16 @@ private fun takePhoto(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
+    // 1. Create the output file with a unique name
     val photoFile = File(
         outputDirectory,
         SimpleDateFormat(filenameFormat, Locale.US).format(System.currentTimeMillis()) + ".jpg"
     )
 
+    // 2. Configure output options
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
+    // 3. Take picture
     imageCapture.takePicture(
         outputOptions,
         executor,
@@ -155,6 +196,7 @@ private fun takePhoto(
             }
 
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                // On success, create a URI from the file and return it
                 val savedUri = Uri.fromFile(photoFile)
                 onImageCaptured(savedUri)
             }
@@ -162,6 +204,10 @@ private fun takePhoto(
     )
 }
 
+/**
+ * Extension function to retrieve the ProcessCameraProvider asynchronously using Coroutines.
+ * Adapts the Future-based API of CameraX to a suspend function.
+ */
 private suspend fun Context.getCameraProvider() : ProcessCameraProvider = suspendCoroutine { continuation ->
     val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
     cameraProviderFuture.addListener({

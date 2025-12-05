@@ -15,13 +15,22 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Meal Details screen.
+ * Fetches the specific meal based on the ID passed in the navigation arguments.
+ */
 class MealDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val mealsRepository: MealsRepository
 ) : ViewModel() {
 
+    // Retrieve the meal ID from the navigation arguments
     private val mealId: Int = checkNotNull(savedStateHandle[MealDetailsDestination.itemIdArg])
 
+    /**
+     * StateFlow holding the details of the requested meal.
+     * Maps the Repository Flow<Meal?> to MealDetailsUiState.
+     */
     val uiState: StateFlow<MealDetailsUiState> =
         mealsRepository.getMealStream(mealId)
             .filterNotNull()
@@ -33,6 +42,10 @@ class MealDetailsViewModel(
                 initialValue = MealDetailsUiState()
             )
 
+    /**
+     * Toggles the 'Favourite' boolean flag for the current meal.
+     * Updates the database asynchronously.
+     */
     fun toggleFavourite() {
         val currentMeal = uiState.value.mealDetails.toMeal()
         val updatedMeal = currentMeal.copy(isFavourite = !currentMeal.isFavourite)
@@ -41,6 +54,11 @@ class MealDetailsViewModel(
         }
     }
 
+    /**
+     * Toggles the 'Tracked' boolean flag.
+     * (Note: Logic might need review depending on how 'tracking' is defined in the requirement,
+     * usually tracking is a separate table, but this toggles a flag on the Meal entity).
+     */
     fun toggleTracked() {
         val currentMeal = uiState.value.mealDetails.toMeal()
         val updatedMeal = currentMeal.copy(isTracked = !currentMeal.isTracked)
@@ -49,6 +67,9 @@ class MealDetailsViewModel(
         }
     }
 
+    /**
+     * Deletes the current meal from the database.
+     */
     suspend fun deleteMeal() {
         mealsRepository.deleteMeal(uiState.value.mealDetails.toMeal())
     }
@@ -59,6 +80,9 @@ class MealDetailsViewModel(
     }
 }
 
+/**
+ * UI State for the Details screen.
+ */
 data class MealDetailsUiState(
     val mealDetails: MealDetails = MealDetails()
 )

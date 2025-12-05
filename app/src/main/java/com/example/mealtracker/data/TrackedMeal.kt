@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
+// Tracked_meals table
 @Entity(
     tableName = "tracked_meals",
     foreignKeys = [
@@ -16,6 +17,7 @@ import androidx.room.PrimaryKey
     ]
 )
 
+// Tracked meal entity
 data class TrackedMeal (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
